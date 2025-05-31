@@ -2,22 +2,38 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Role;
+use App\Enums\RoleEnum;
 use Illuminate\Database\Seeder;
+
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        foreach (RoleEnum::cases() as $roleEnum) {
+            Role::firstOrCreate(
+                ['name' => $roleEnum->value],
+                [
+                    'display_name' => $roleEnum->displayName(),
+                    'description' => $roleEnum->description(),
+                ]
+            );
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $username = env('ADMIN_USERNAME', 'Admin');
+        $email = env('ADMIN_EMAIL', 'admin@example.com');
+        $password = env('ADMIN_PASSWORD', 'password');
+
+        $user = \App\Models\User::factory()->create([
+            'username' => $username,
+            'email' => $email,
+            'password' => Hash::make($password),
         ]);
+
+        $role = Role::where('name', RoleEnum::ADMIN->value)->first();
+        $user->roles()->attach($role->id);
     }
 }
+
