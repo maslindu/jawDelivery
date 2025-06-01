@@ -14,14 +14,20 @@ use App\Enums\RoleEnum;
 
 class AuthController extends Controller
 {
-    public function signup(Request $request)
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username'              => 'required|string|unique:users,username|max:255',
-            'email'                 => 'required|email|unique:users,email',
-            'password'              => 'required|string|min:8|confirmed',
-            // password_confirmation field is required
+            'username'  => 'required|string|unique:users,username|max:255',
+            'email'     => 'required|email|unique:users,email',
+            'phone'     => [
+                'required',
+                'unique:users,phone',
+                'regex:/^\+?[0-9]{10,15}$/'
+            ],
+            'fullName'  => 'required|max:255',
+            'password'  => 'required|string|min:8|confirmed',
         ]);
+        
 
         if ($validator->fails()) {
             return $this->responseError('Validasi gagal.', $validator->errors(), Response::HTTP_BAD_REQUEST);
@@ -34,21 +40,23 @@ class AuthController extends Controller
             $user = User::create([
                 'username' => $validatedData['username'],
                 'email'    => $validatedData['email'],
+                'phone'    => $validatedData['phone'],
+                'fullName' => $validatedData['fullName'],
                 'password' => $validatedData['password'],
             ]);
+            
 
             $role = Role::where('name', RoleEnum::PELANGGAN->value)->first();
             $user->roles()->attach($role->id);
-
-            return $this->responseSuccess('Berhasil membuat akun pengguna.', [
-                'user' => $user,
-                'access_token' => $user->createToken($request->email)->plainTextToken
-            ], Response::HTTP_CREATED);
+            auth()->login($user); 
+            return redirect("/dashboard"); 
 
         } catch (\Exception $e) {
-            Log::error('Signup error: ' . $e->getMessage());
-            return $this->responseError('Gagal membuat akun pengguna.', null, Response::HTTP_INTERNAL_SERVER_ERROR);
+            return redirect()->back()->withErrors([
+                'login_error' => 'An unexpected error occurred. Please try again.'
+            ]);
         }
+
     }
     
     public function login(Request $request)
@@ -67,7 +75,7 @@ class AuthController extends Controller
                 ]);
             }
             auth()->login($user); 
-            return redirect("/"); 
+            return redirect("/dashboard"); 
     
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
@@ -80,25 +88,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        try {
-            $request->user()->currentAccessToken()->delete();
-            return $this->responseSuccess(
-                    'Berhasil Logout', 
-                    null,
-                    Response::HTTP_OK
-            );
-        } catch (\Exception $e) {
-            Log::error('An error occurred during login.', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-            ]);
-            return $this->responseError(
-                    'An unexpected error occurred. Please try again later.', 
-                    null,
-                    Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-
+        auth()->logout();
+    
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken();
+        return redirect()->back();
     }
+    
 }
 

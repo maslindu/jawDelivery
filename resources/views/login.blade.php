@@ -143,23 +143,23 @@
         .register a:hover {
             text-decoration: underline;
         }
-    .error-box {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-    }
+        .error-box {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
 
-    .error-box ul {
-        margin: 0;
-        padding-left: 20px;
-    }
+        .error-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
 
-    .error-box li {
-        list-style-type: disc;
-    }
+        .error-box li {
+            list-style-type: disc;
+        }
 
     </style>
 </head>
@@ -201,7 +201,7 @@
 
         <div class="register">
             <p>Don't Have an Account?</p>
-            <a href="">Register Now!</a>
+            <a href="/register">Register Now!</a>
         </div>
     </div>
 </body>
