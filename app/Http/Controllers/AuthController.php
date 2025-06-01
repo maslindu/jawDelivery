@@ -30,8 +30,11 @@ class AuthController extends Controller
         
 
         if ($validator->fails()) {
-            return $this->responseError('Validasi gagal.', $validator->errors(), Response::HTTP_BAD_REQUEST);
+            return redirect()->back()->withErrors([
+                'login_error' => $validator->errors()->first()
+            ]);
         }
+        
 
         $validatedData = $validator->validated();
         $validatedData['password'] = Hash::make($validatedData['password']);
