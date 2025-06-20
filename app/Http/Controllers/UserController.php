@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -18,9 +19,9 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'username'  => ['required', 'string', 'max:255', Rule::unique('users', 'username')->ignore($user->id)],
-            'email'     => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+        $validator = Validator::make($request->all(), [
+            'username'  => ['required', 'string', 'max:255', 'regex:/^\S*$/', Rule::unique('users', 'username')->ignore($user->id)],
+            'email'     => ['required',  'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', Rule::unique('users', 'email')->ignore($user->id)],
             'phone'     => [
                 'required',
                 'regex:/^\+?[0-9]{10,15}$/',
@@ -30,6 +31,12 @@ class UserController extends Controller
             'avatar'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
+
+        $validated = $validator->validated();
         $user->username  = $validated['username'];
         $user->fullName  = $validated['fullName'];
         $user->email     = $validated['email'];

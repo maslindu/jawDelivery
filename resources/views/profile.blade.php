@@ -14,7 +14,11 @@
     <main class="main-content">
         <section class="profile-section">
             <h2 class="profile-title">Profil Anda</h2>
-            <p>{{ Auth::user()->avatar_url }}</p>
+            @if(session('success') || session('error'))
+                <div class="status-box {{ session('success') ? 'success' : 'error' }}">
+                    {{ session('success') ?? session('error') }}
+                </div>
+            @endif
             <div class="profile-content">
                 <div class="photo-section">
                     <div class="photo-placeholder" id="photoPreview"

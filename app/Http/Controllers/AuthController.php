@@ -17,8 +17,8 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username'  => 'required|string|unique:users,username|max:255',
-            'email'     => 'required|email|unique:users,email',
+            'username'  => 'required|string|unique:users,username|max:255|regex:/^\S*$/',
+            'email'     => 'required|regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/|unique:users,email',
             'phone'     => [
                 'required',
                 'unique:users,phone',
@@ -27,14 +27,14 @@ class AuthController extends Controller
             'fullName'  => 'required|max:255',
             'password'  => 'required|string|min:8|confirmed',
         ]);
-        
+
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors([
                 'login_error' => $validator->errors()->first()
             ]);
         }
-        
+
 
         $validatedData = $validator->validated();
         $validatedData['password'] = Hash::make($validatedData['password']);
@@ -47,12 +47,12 @@ class AuthController extends Controller
                 'fullName' => $validatedData['fullName'],
                 'password' => $validatedData['password'],
             ]);
-            
+
 
             $role = Role::where('name', RoleEnum::PELANGGAN->value)->first();
             $user->roles()->attach($role->id);
-            auth()->login($user); 
-            return redirect("/dashboard"); 
+            auth()->login($user);
+            return redirect("/dashboard");
 
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
@@ -61,7 +61,7 @@ class AuthController extends Controller
         }
 
     }
-    
+
     public function login(Request $request)
     {
         try {
@@ -69,34 +69,34 @@ class AuthController extends Controller
                 'username' => 'required',
                 'password' => 'required',
             ]);
-    
+
             $user = User::where('username', $request->username)->first();
-    
+
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return redirect()->back()->withErrors([
                     'login_error' => 'Invalid username or password.'
                 ]);
             }
-            auth()->login($user); 
-            return redirect("/dashboard"); 
-    
+            auth()->login($user);
+            return redirect("/dashboard");
+
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
                 'login_error' => 'An unexpected error occurred. Please try again.'
             ]);
         }
     }
-    
+
 
 
     public function logout(Request $request)
     {
         auth()->logout();
-    
-        $request->session()->invalidate(); 
+
+        $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->back();
+        return redirect('/dashboard');
     }
-    
+
 }
 
