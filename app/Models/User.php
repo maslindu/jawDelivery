@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laratrust\Contracts\LaratrustUser;
 use Laravel\Sanctum\HasApiTokens;
 use Laratrust\Traits\HasRolesAndPermissions;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements LaratrustUser
 {
@@ -21,6 +22,7 @@ class User extends Authenticatable implements LaratrustUser
         'password',
         'phone',
         'address',
+        'avatar_link'
     ];
 
     protected $hidden = [
@@ -33,5 +35,11 @@ class User extends Authenticatable implements LaratrustUser
         return [
             'password' => 'hashed',
         ];
+    }
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar_link
+            ? Storage::url('avatar/' . $this->avatar_link)
+            : Storage::url('avatar/default-avatar.jpg');
     }
 }

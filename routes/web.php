@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,6 +19,8 @@ Route::get('/register', function () {
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+Route::get('/profile', [UserController::class, 'index'])->name('user');
+Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('api.auth.register');

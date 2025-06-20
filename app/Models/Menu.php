@@ -13,6 +13,6 @@ class Menu extends Model
         'price',
         'stock',
         'description',
-        'image',
+        'image_link',
     ];
 }

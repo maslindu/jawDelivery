@@ -14,7 +14,7 @@ return new class extends Migration
             $table->integer('price');
             $table->integer('stock');
             $table->text('description')->nullable();
-            $table->binary('image')->nullable();
+            $table->string('image_link')->nullable();
             $table->boolean('featured')->default(false);
             $table->timestamps();
         });
