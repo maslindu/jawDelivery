@@ -254,48 +254,4 @@ body {
 .scroll-btn.right {
     right: 0;
 }
-.dropdown {
-    position: absolute;
-    top: 70px;
-    right: 50px;
-    width: 300px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: 1px solid #ddd;
-    z-index: 100;
-    display: none;
-}
 
-.dropdown.active {
-    display: block;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #eee;
-    margin-right: 15px;
-}
-
-.user-details {
-    flex-grow: 1;
-}
-
-.user-name {
-    font-weight: bold;
-    margin-bottom: 3px;
-}
-
-.user-email {
-    font-size: 14px;
-    color: #666;
-}

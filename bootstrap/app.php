@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => Laratrust\Middleware\LaratrustRoleMiddleware::class,
+            'pelanggan_or_guest' => \App\Http\Middleware\PelangganOrGuest::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

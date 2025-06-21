@@ -58,6 +58,7 @@ class UserController extends Controller
 
             try {
                 $path = $avatarFile->storeAs('public/avatar', $filename);
+                $user->avatar_link = $filename;
             } catch (\Exception $e) {
                 Log::error('Error storing file: ' . $e->getMessage());
                 return redirect()->back()->with('error', 'Gagal menyimpan avatar: ' . $e->getMessage());

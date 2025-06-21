@@ -11,11 +11,19 @@
     @endif
 
     <div class="auth-buttons">
-        @if (!Request::is('dashboard'))
-        <div style="display: flex; align-items: center; gap: 10px; font-weight:600">
-            <a href="{{ url('/dashboard') }}" style="text-decoration: none; color: #333;">Home</a>
-            <div style="width: 2px; height: 25px; background-color: #ccc;"></div>
-        </div>
+        @php
+            $user = auth()->user();
+            $homeUrl = '/dashboard';
+
+            if ($user && $user->hasRole('admin')) {
+                $homeUrl = '/admin';
+            }
+        @endphp
+        @if (!Request::is('/') && !Request::is('dashboard') && !Request::is('admin'))
+            <div style="display: flex; align-items: center; gap: 10px; font-weight:600">
+                <a href="{{ url($homeUrl) }}" style="text-decoration: none; color: #333;">Home</a>
+                <div style="width: 2px; height: 25px; background-color: #ccc;"></div>
+            </div>
         @endif
 
         @guest

@@ -30,10 +30,13 @@ Route::middleware(['role:admin|pelanggan'])->group(function () {
 
 Route::middleware(['role:admin'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'admin'])->name('admin.dashboard');
-    
+
 
 });
 
 Route::middleware(['role:pelanggan'])->group(function () {
+});
+
+Route::middleware(['pelanggan_or_guest'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
