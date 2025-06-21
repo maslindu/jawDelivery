@@ -44,3 +44,7 @@ Route::middleware(['pelanggan_or_guest'])->group(function () {
 Route::get('/ubah-password', function () {
     return view('change-password');
 })->name('password.change');
+
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
