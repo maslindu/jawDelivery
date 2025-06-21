@@ -13,4 +13,8 @@ class DashboardController extends Controller
         $categories = Category::all();
         return view('dashboard', compact('menuItems', 'categories'));
     }
+    public function admin()
+    {
+        return view('admin.dashboard');
+    }
 }

@@ -78,7 +78,11 @@ class AuthController extends Controller
                 ]);
             }
             auth()->login($user);
-            return redirect("/dashboard");
+            if ($user->hasRole('admin')) {
+                return redirect('/admin');
+            } elseif ($user->hasRole('pelanggan')) {
+                return redirect('/dashboard');
+            }
 
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([

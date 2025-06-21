@@ -17,9 +17,6 @@ Route::get('/register', function () {
     return view('register');
 })->name('register');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('api.auth.register');
     Route::post('login', [AuthController::class, 'login'])->name('api.auth.login');
@@ -31,3 +28,12 @@ Route::middleware(['role:admin|pelanggan'])->group(function () {
     Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 });
 
+Route::middleware(['role:admin'])->group(function () {
+    Route::get('/admin', [DashboardController::class, 'admin'])->name('admin.dashboard');
+    
+
+});
+
+Route::middleware(['role:pelanggan'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
