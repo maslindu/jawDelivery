@@ -46,3 +46,11 @@ Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
 Route::middleware(['pelanggan_or_guest'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
+
+Route::get('/ubah-password', function () {
+    return view('change-password');
+})->name('password.change');
+
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
