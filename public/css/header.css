@@ -22,6 +22,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 24px 32px;
+    border-bottom: 2px solid #b0b0b0; /* abu gelap */
 }
 
 .logo {

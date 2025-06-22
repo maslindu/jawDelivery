@@ -54,3 +54,11 @@ Route::get('/ubah-password', function () {
 Route::get('/checkout', function () {
     return view('checkout');
 })->name('checkout');
+
+Route::get('/favorite-menu', function () {
+    return view('favorite-menu');
+})->name('user.favorite');
+
+Route::get('/history', function () {
+    return view('history');
+})->name('user.history');

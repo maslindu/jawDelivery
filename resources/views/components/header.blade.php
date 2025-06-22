@@ -69,16 +69,12 @@
                     <div class="profile-option">Daftar Alamat</div>
                 </a>
 
-                <a href="{{ route('user.address') }}">
+                <a href="{{ route('user.history') }}">
                     <div class="profile-option">Daftar Transaksi</div>
                 </a>
 
-                <a href="{{ route('user.address') }}">
+                <a href="{{ route('user.favorite') }}">
                     <div class="profile-option">Menu Favorit</div>
-                </a>
-
-                <a href="{{ route('user.address') }}">
-                    <div class="profile-option">Promo yang Dimiliki</div>
                 </a>
 
                 <div class="logout-button" id=logoutButton>LOGOUT</div>

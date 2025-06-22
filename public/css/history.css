@@ -1,0 +1,77 @@
+body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background: #f7f7f7;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.history-container {
+    max-width: 700px;
+    margin: 32px auto;
+    padding: 0 16px;
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 18px;
+}
+
+.history-title {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    color: #222;
+    border-bottom: 2px solid red;
+    padding-bottom: 8px;
+}
+
+.history-card {
+    background: #f4f4f8;
+    border: 1px solid #000;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 20px 24px;
+    position: relative;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.history-order-number {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.history-date {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.history-info {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.history-status {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000;
+    padding: 4px 16px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.history-total-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+
+.history-total {
+    font-size: 15px;
+    font-weight: 700;
+    color: #222;
+}

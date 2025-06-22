@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +10,18 @@
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
     <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
 </head>
+
 <body>
     @include('components.header')
 
     <main class="main-content">
         <!-- Order Section -->
         <div class="order-section">
-            <h2 class="section-title">Pesanan</h2>
+            <div class="section-title-wrapper">
+                <h2 class="section-title">Pesanan</h2>
+            </div>
             
+
             <div class="product-item">
                 <div class="product-image"></div>
                 <div class="product-info">
@@ -76,12 +81,12 @@
                     <div class="address-info">
                         <div class="address-title">Alamat Pengiriman</div>
                         <div class="address-details">
-                           <!--<div class="location-icon">📍</div>-->
-                           <!--<i class="material-icons">place</i>-->
-                           <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                              <circle cx="12" cy="10" r="3"></circle>
-                           </svg>
+                            <!--<div class="location-icon">📍</div>-->
+                            <!--<i class="material-icons">place</i>-->
+                            <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
                             <div class="address-text">
                                 <div class="address-name-row">
                                     <span class="address-name">Rumah User</span>
@@ -95,7 +100,13 @@
 
                 <div class="payment-method">
                     <div class="method-title">Metode Pembayaran</div>
-                    <button class="paymentOption-btn">Transfer</button>
+                    <div class="payment-selector">
+                        <button class="paymentOption-btn">Transfer</button>
+                        <div class="payment-dropdown">
+                            <div class="payment-option" data-value="tunai">Tunai</div>
+                            <div class="payment-option" data-value="transfer">Transfer</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="price-breakdown">
@@ -132,18 +143,18 @@
         document.querySelectorAll('.quantity-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const isIncrement = this.textContent === '+';
-                const display = isIncrement ? 
-                    this.previousElementSibling : 
+                const display = isIncrement ?
+                    this.previousElementSibling :
                     this.nextElementSibling;
-                
+
                 let currentValue = parseInt(display.textContent);
-                
+
                 if (isIncrement) {
                     currentValue++;
                 } else if (currentValue > 1) {
                     currentValue--;
                 }
-                
+
                 display.textContent = currentValue;
             });
         });
@@ -170,5 +181,35 @@
             alert('Mengarahkan ke halaman pembayaran...');
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.querySelector('.paymentOption-btn');
+            const dropdown = document.querySelector('.payment-dropdown');
+
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selected = this.getAttribute('data-value');
+                    btn.textContent = this.textContent; // Update tombol
+                    dropdown.style.display = 'none';
+                });
+            });
+
+            document.addEventListener('click', function() {
+                dropdown.style.display = 'none';
+            });
+
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+
+
 </body>
+
 </html>

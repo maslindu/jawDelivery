@@ -1,300 +1,337 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f5f5f5;
-            min-height: 100vh;
-        }
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+}
 
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 20px;
-        }
+.order-section {
+    background: white;
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 25px;
 
-        .order-section {
-            background: white;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 25px;
-        }
+}
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+    border-bottom: 2px solid #ff4444;
+    padding-bottom: 4px;
+    margin: 0 auto 20px auto;  
+    display: block;            
+    width: fit-content;        
+    text-align: center;
+}
 
-        .product-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
 
-        .product-item:last-child {
-            border-bottom: none;
-        }
+.product-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
 
-        .product-image {
-            width: 60px;
-            height: 60px;
-            background-color: #e0e0e0;
-            border-radius: 8px;
-            flex-shrink: 0;
-        }
+.product-item:last-child {
+    border-bottom: none;
+}
 
-        .product-info {
-            flex: 1;
-        }
+.product-image {
+    width: 60px;
+    height: 60px;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
 
-        .product-name {
-            font-weight: 600;
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 4px;
-        }
+.product-info {
+    flex: 1;
+}
 
-        .product-description {
-            font-size: 14px;
-            color: #666;
-        }
+.product-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 4px;
+}
 
-        .product-price {
-            font-weight: 600;
-            color: #333;
-            margin-right: 15px;
-        }
+.product-description {
+    font-size: 14px;
+    color: #666;
+}
 
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-right: 10px;
-        }
+.product-price {
+    font-weight: 600;
+    color: #333;
+    margin-right: 15px;
+}
 
-        .quantity-btn {
-            width: 25px;
-            height: 25px;
-            border: 1px solid #333;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
-        }
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 10px;
+}
 
-        .quantity-display {
-            min-width: 20px;
-            text-align: center;
-            font-weight: 600;
-        }
+.quantity-btn {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #333;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+}
 
-        .delete-btn {
-            width: 25px;
-            height: 25px;
-            background: #ff4444;
-            border: none;
-            border-radius: 3px;
-            color: white;
-            cursor: pointer;
-            font-size: 12px;
-        }
+.quantity-display {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 600;
+}
 
-        .order-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 2px solid #333;
-        }
+.delete-btn {
+    width: 25px;
+    height: 25px;
+    background: #ff4444;
+    border: none;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+}
 
-        .total-text {
-            font-weight: 700;
-            font-size: 16px;
-        }
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #333;
+}
 
-        .notes-btn {
-            background: white;
-            border: 2px solid #333;
-            border-radius: 20px;
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+.total-text {
+    font-weight: 700;
+    font-size: 16px;
+}
 
-        .summary-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+.notes-btn {
+    background: white;
+    border: 2px solid #333;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
 
-        .summary-card {
-            background: white;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 20px;
-        }
+.summary-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-        .address-section {
-            margin-bottom: 20px;
-        }
+.summary-card {
+    background: white;
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 20px;
+}
 
-        .address-info {
-            flex: 1;
-        }
+.address-section {
+    margin-bottom: 20px;
+}
 
-        .address-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
+.address-info {
+    flex: 1;
+}
 
-        .address-details {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
+.address-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
-        .location-icon {
-            width: 30px;
-            height: 30px;
-            margin-top: 8px;
-            margin-bottom: 8px;
-        }
+.address-details {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
 
-        .address-text {
-            flex: 1;
-        }
+.location-icon {
+    width: 30px;
+    height: 30px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
 
-        .address-name {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
+.address-text {
+    flex: 1;
+}
 
-        .address-full {
-            font-size: 14px;
-            color: #666;
-        }
+.address-name {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
 
-        .change-btn {
-            background: #ffc107;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+.address-full {
+    font-size: 14px;
+    color: #666;
+}
 
-        .payment-method {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.change-btn {
+    background: #ffc107;
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
 
-        .method-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
+.payment-method {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
 
-        .paymentOption-btn {
-            background: #ff4444;
-            color: black;
-            border: 2px solid black;
-            border-radius: 24px;
-            padding: 8px 16px;   
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+.method-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
-        .price-breakdown {
-            margin-bottom: 20px;
-        }
+.paymentOption-btn {
+    background: #ff4444;
+    color: black;
+    border: 2px solid black;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
 
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
+.payment-selector {
+    position: relative;
+    display: inline-block;
+}
 
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 700;
-            font-size: 16px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
+.payment-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: white;
+    border: 2px solid black;
+    border-radius: 12px;
+    width: 130px;
+    display: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+}
 
-        .promo-section {
-            margin-bottom: 20px;
-        }
+.payment-option {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    color: black;
+    transition: background 0.2s;
+}
 
-        .promo-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+.payment-option:hover {
+    background-color: #f1f1f1;
+}
 
-        .confirm-btn {
-            width: 100%;
-            background: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+.price-breakdown {
+    margin-bottom: 20px;
+}
 
-        .confirm-btn:hover {
-            background: #e63939;
-        }
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
 
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                padding: 15px;
-            }
-            
-            .product-item {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            
-            .quantity-controls {
-                margin-right: 0;
-            }
-        }
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
 
-        .address-name-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2px;
-        }
+.promo-section {
+    margin-bottom: 20px;
+}
+
+.promo-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.confirm-btn {
+    width: 100%;
+    background: #ff4444;
+    color: black;
+    border: 2px solid #000;
+    border-radius: 25px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.confirm-btn:hover {
+    background: #e63939;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        padding: 15px;
+    }
+
+    .product-item {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .quantity-controls {
+        margin-right: 0;
+    }
+}
+
+.address-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
