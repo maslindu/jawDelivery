@@ -7,13 +7,23 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use App\Models\UserAddress;
 
 class UserController extends Controller
 {
     public function index()
     {
-        return view('profile');
+        $user = Auth::user();
+
+        $primaryAddress = UserAddress::where('user_id', $user->id)
+            ->where('is_primary', true)
+            ->first();
+
+        return view('profile', [
+            'primaryAddress' => $primaryAddress,
+        ]);
     }
+
 
     public function update(Request $request)
     {

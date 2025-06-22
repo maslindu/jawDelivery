@@ -62,21 +62,24 @@
                 </div>
         </section>
 
-        <!-- Bottom Cards -->
         <div class="bottom-cards">
-            <!-- Address Card -->
             <div class="card">
                 <h3 class="card-title">Alamat Anda</h3>
                 <div class="address-content">
-                    <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
+                            <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
                     <div class="address-info">
-                        <div class="address-name">Rumah Userh</div>
-                        <div class="address-detail">Jl Surakarta Timur No.999</div>
+                        @if($primaryAddress)
+                            <div class="address-name">{{ $primaryAddress->label }}</div>
+                            <div class="address-detail">{{ $primaryAddress->address }}</div>
+                        @else
+                            <div class="address-name text-muted">Belum ada alamat</div>
+                            <div class="address-detail">Silakan tambah alamat</div>
+                        @endif
                     </div>
-                    <a href="#" class="action-link">Atur Alamat</a>
+                    <a href="{{ route('user.address') }}" class="action-link">Atur Alamat</a>
                 </div>
             </div>
 

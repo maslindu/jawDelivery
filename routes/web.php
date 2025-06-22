@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AddressController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,14 +29,19 @@ Route::middleware(['role:admin|pelanggan'])->group(function () {
     Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 });
 
-Route::middleware(['role:admin'])->group(function () {
-    Route::get('/admin', [DashboardController::class, 'admin'])->name('admin.dashboard');
-
-
+Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+    Route::get('/', [DashboardController::class, 'admin'])->name('admin.dashboard');
 });
 
-Route::middleware(['role:pelanggan'])->group(function () {
+
+Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
+    Route::post('/address', [AddressController::class, 'store'])->name('user.address.store');
+    Route::put('/address/{id}', [AddressController::class, 'update'])->name('user.address.update');
+    Route::delete('/address/{id}', [AddressController::class, 'destroy'])->name('user.address.destroy');
+    Route::get('/address', [AddressController::class, 'index'])->name('user.address');
 });
+
+
 
 Route::middleware(['pelanggan_or_guest'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
