@@ -28,12 +28,13 @@
                     <div class="product-info">
                         <div class="product-name">{{ $item->menu->name }}</div>
                         <div class="product-description">{{ $item->menu->description }}</div>
+                        <div class="product-stock">Stock: {{ $item->menu->stock }}</div>
                     </div>
                     <div class="product-price">Rp {{ number_format($item->menu->price, 0, ',', '.') }}</div>
                     <div class="quantity-controls">
-                        <button class="quantity-btn decrement" data-id="{{ $item->id }}">-</button>
+                        <button class="quantity-btn decrement" data-id="{{ $item->id }}" data-stock="{{ $item->menu->stock }}">-</button>
                         <span class="quantity-display">{{ $item->quantity }}</span>
-                        <button class="quantity-btn increment" data-id="{{ $item->id }}">+</button>
+                        <button class="quantity-btn increment" data-id="{{ $item->id }}" data-stock="{{ $item->menu->stock }}">+</button>
                     </div>
                     <button class="delete-btn" data-id="{{ $item->id }}">🗑</button>
                 </div>
@@ -122,86 +123,105 @@
 
     <script src="{{ asset('js/header.js') }}" defer></script>
     <script>
-document.querySelectorAll('.quantity-btn').forEach(button => {
-    button.addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        const cartId = button.dataset.id;
-        if (!cartId) {
-            console.error('No cart ID provided');
-            return;
-        }
-
-        const isIncrement = button.classList.contains('increment');
-        const display = button.parentElement.querySelector('.quantity-display');
-        let quantity = parseInt(display.textContent);
-        quantity = isIncrement ? quantity + 1 : Math.max(1, quantity - 1);
-
-        try {
-            const response = await fetch(`/cart/${cartId}/quantity`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ quantity })
-            });
-
-            if (!response.ok) throw new Error("Server error");
-
-            const data = await response.json();
-            display.textContent = data.quantity;
-            document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(3) span:nth-child(2)').textContent = `Rp ${data.adminFee.toLocaleString('id-ID')}`;
-            document.querySelector('.total-row span:nth-child(2)').textContent = `Rp ${data.total.toLocaleString('id-ID')}`;
-        } catch (error) {
-            console.error("Failed to update quantity:", error);
-        }
-    });
-});
-
-
-document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', function () {
-        const cartId = this.dataset.id;
-
-        if (!cartId) {
-            return;
-        }
-
-        fetch(`/cart/${cartId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Server error');
-            return response.json();
-        })
-        .then(data => {
-            console.log('Deleted successfully', data);
-            document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
-            document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(3) span:nth-child(2)').textContent = `Rp ${data.adminFee.toLocaleString('id-ID')}`;
-            document.querySelector('.total-row span:nth-child(2)').textContent = `Rp ${data.total.toLocaleString('id-ID')}`;
-        })
-        .catch(error => {
-            console.error('Failed to delete:', error);
+        document.querySelectorAll('.quantity-btn').forEach(button => {
+            button.addEventListener('click', (e) => handleQuantityChange(e, button));
         });
-    });
-});
 
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', deleteCartItemHandler);
+        });
+        function deleteCartItemHandler(e) {
+            e.preventDefault();
+            const button = e.currentTarget;
+            const cartId = button.dataset.id;
 
-        function formatRupiah(number) {
-            return number.toLocaleString('id-ID');
+            if (!cartId) {
+                console.error('No cart ID found');
+                return;
+            }
+
+            deleteCartItem(cartId);
         }
-    </script>
+
+
+        async function handleQuantityChange(e, button) {
+            e.preventDefault();
+
+            const cartId = button.dataset.id;
+            if (!cartId) return console.error('No cart ID provided');
+
+            const isIncrement = button.classList.contains('increment');
+            const display = button.parentElement.querySelector('.quantity-display');
+            let quantity = parseInt(display.textContent);
+            const stock = parseInt(button.dataset.stock);
+
+            if (!isIncrement && quantity === 1) {
+                await deleteCartItem(cartId);
+            } else {
+                const newQuantity = isIncrement ? quantity + 1 : quantity - 1;
+                if (newQuantity > stock) return;
+
+                await updateCartQuantity(cartId, newQuantity, display, button.parentElement);
+            }
+        }
+
+        async function updateCartQuantity(cartId, quantity, display) {
+            try {
+                const response = await fetch(`/cart/${cartId}/quantity`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ quantity })
+                });
+
+                if (!response.ok) throw new Error("Server error");
+
+                const data = await response.json();
+                display.textContent = data.quantity;
+                updatePriceSummary(data);
+            } catch (error) {
+                console.error("Failed to update quantity:", error);
+            }
+        }
+
+        async function deleteCartItem(cartId) {
+            try {
+                const response = await fetch(`/cart/${cartId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete item');
+
+                const data = await response.json();
+
+                // Remove item from DOM
+                document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
+                updatePriceSummary(data);
+            } catch (error) {
+                console.error('Failed to delete:', error);
+            }
+        }
+
+        function updatePriceSummary(data) {
+            document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
+            document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
+            document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
+            document.querySelector('.price-breakdown .price-row:nth-child(3) span:nth-child(2)').textContent = `Rp ${data.adminFee.toLocaleString('id-ID')}`;
+            document.querySelector('.total-row span:nth-child(2)').textContent = `Rp ${data.total.toLocaleString('id-ID')}`;
+        }
+
+
+
+            function formatRupiah(number) {
+                return number.toLocaleString('id-ID');
+            }
+        </script>
 
     <script>
         // Notes button

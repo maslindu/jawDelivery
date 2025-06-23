@@ -324,3 +324,8 @@ body {
     cursor: not-allowed;
     pointer-events: none;
 }
+.product-stock {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 4px;
+}
