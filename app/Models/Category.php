@@ -13,4 +13,8 @@ class Category extends Model
     protected $fillable = [
         'name',
     ];
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class);
+    }
 }
