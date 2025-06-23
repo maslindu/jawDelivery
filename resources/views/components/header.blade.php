@@ -84,7 +84,7 @@
                     <a href="{{ route('admin.manage-users') }}">
                         <div class="profile-option">Kelola Pengguna</div>
                     </a>
-                    <a href="{{ route('admin.reports') }}">
+                    <a href="{{ route('admin.financial-reports') }}">
                         <div class="profile-option">Laporan</div>
                     </a>
                 @else
