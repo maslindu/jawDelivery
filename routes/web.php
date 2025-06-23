@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,6 +40,7 @@ Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
     Route::put('/address/{id}', [AddressController::class, 'update'])->name('user.address.update');
     Route::delete('/address/{id}', [AddressController::class, 'destroy'])->name('user.address.destroy');
     Route::get('/address', [AddressController::class, 'index'])->name('user.address');
+    Route::post('/cart/add-item', [CartController::class, 'create'])->name('user.addItem');
 });
 
 

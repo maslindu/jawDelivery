@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.cdnfonts.com/css/plus-jakarta-sans" rel="stylesheet">
     <title>JawDelivery</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
     <link rel="stylesheet" href="{{ asset('css/menupopup.css') }}">
@@ -62,6 +63,7 @@
                 @else
                     @foreach ($menuItems as $item)
                         <div class="menu-item"
+                            data-id="{{ $item->id }}"
                             data-name="{{ $item->name }}"
                             data-price="{{ $item->price }}"
                             data-stock="{{ $item->stock }}"
