@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,18 +42,20 @@ Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
     Route::delete('/address/{id}', [AddressController::class, 'destroy'])->name('user.address.destroy');
     Route::get('/address', [AddressController::class, 'index'])->name('user.address');
     Route::post('/cart/add-item', [CartController::class, 'create'])->name('user.addItem');
+    Route::get('/ubah-password', function () {
+        return view('change-password');
+    })->name('password.change');
 });
 
-
+Route::get('/checkout', [CheckoutController::class, 'index'])
+    ->middleware('role:pelanggan')
+    ->name('checkout');
 
 Route::middleware(['pelanggan_or_guest'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
-Route::get('/ubah-password', function () {
-    return view('change-password');
-})->name('password.change');
+Route::patch('/cart/{id}/quantity', [CartController::class, 'updateQuantity'])->middleware('role:pelanggan');
+Route::delete('/cart/{id}', [CartController::class, 'destroy'])->middleware('role:pelanggan');
 
-Route::get('/checkout', function () {
-    return view('checkout');
-})->name('checkout');
+

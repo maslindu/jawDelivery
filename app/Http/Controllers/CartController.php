@@ -78,11 +78,46 @@ class CartController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function updateQuantity(Request $request, $id)
     {
-        //
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $cart = Cart::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $cart->quantity = $request->quantity;
+        $cart->save();
+
+        return $this->cartTotalsJson($id);
     }
+
+    public function destroy($id)
+    {
+        $cart = Cart::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $cart->delete();
+
+        return $this->cartTotalsJson($id);
+    }
+
+private function cartTotalsJson($id)
+{
+    $cartItems = Cart::with('menu')->where('user_id', auth()->id())->get();
+
+    // Try to get the updated item, but allow null if not found
+    $updatedItem = Cart::where('id', $id)->where('user_id', auth()->id())->first();
+
+    $subtotal = $cartItems->sum(fn($item) => $item->menu->price * $item->quantity);
+    $shipping = 10000;
+    $adminFee = 1000;
+    $total = $subtotal + $shipping + $adminFee;
+
+    return response()->json([
+        'quantity' => $updatedItem ? $updatedItem->quantity : null,
+        'subtotal' => $subtotal,
+        'shipping' => $shipping,
+        'adminFee' => $adminFee,
+        'total' => $total
+    ], 200);
+}
+
 }
