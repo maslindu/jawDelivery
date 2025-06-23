@@ -151,7 +151,6 @@ document.querySelectorAll('.quantity-btn').forEach(button => {
 
             const data = await response.json();
             display.textContent = data.quantity;
-            document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
             document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
             document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
             document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
