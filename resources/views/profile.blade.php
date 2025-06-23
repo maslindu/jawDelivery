@@ -56,7 +56,11 @@
 
                             <div class="btn-container">
                                 <button type="submit" class="submit-btn">Submit Perubahan</button>
-                                <button type="button" class="password-btn">Ubah Password</button>
+                                <button type="button" class="password-btn"
+                                        onclick="window.location.href='{{ route('password.change') }}'">
+                                    Ubah Password
+                                </button>
+
                             </div>
                     </form>
                 </div>
