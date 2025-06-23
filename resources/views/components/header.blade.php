@@ -78,10 +78,10 @@
                     <a href="{{ route('admin.manage-menu') }}">
                         <div class="profile-option">Kelola Menu & Kategori</div>
                     </a>
-                    <a href="{{ route('admin.driver') }}">
+                    <a href="{{ route('admin.manage-driver') }}">
                         <div class="profile-option">Kelola Driver</div>
                     </a>
-                    <a href="{{ route('admin.users') }}">
+                    <a href="{{ route('admin.manage-users') }}">
                         <div class="profile-option">Kelola Pengguna</div>
                     </a>
                     <a href="{{ route('admin.reports') }}">

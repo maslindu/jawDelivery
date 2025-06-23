@@ -1,0 +1,121 @@
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #f5f5f7;
+  color: #1f2937;
+}
+
+/* Main area to center content */
+.manage-user-main {
+  padding: 60px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Container utama */
+.user-management-container {
+  background: #ffffff;
+  border: 2px solid #000;
+  border-radius: 16px;
+  max-width: 960px;
+  width: 100%;
+  padding: 50px 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Judul halaman */
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  text-decoration-color: #1f2937;
+}
+
+/* Grid user */
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Card user */
+.user-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 16px 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.user-card:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+/* Avatar Placeholder */
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  background-color: #d1d5db;
+  border-radius: 12px;
+  margin-right: 16px;
+}
+
+/* Info */
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.user-role {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-management-container {
+    padding: 30px 20px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .user-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .user-name {
+    font-size: 15px;
+  }
+
+  .user-role {
+    font-size: 13px;
+  }
+}

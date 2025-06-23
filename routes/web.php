@@ -33,9 +33,9 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'admin'])->name('admin.dashboard');
     Route::get('/orders', function () { return view('admin.orders'); })->name('admin.orders');
     Route::get('/manage-menu', function () { return view('admin.manage-menu'); })->name('admin.manage-menu');
-    Route::get('/driver', function () { return view('admin.driver'); })->name('admin.driver');
-    Route::get('/users', function () { return view('admin.users'); })->name('admin.users');
-    Route::get('/reports', function () { return view('admin.reports'); })->name('admin.reports');
+    Route::get('/manage-driver', function () { return view('admin.manage-driver'); })->name('admin.manage-driver');
+    Route::get('/manage-users', function () { return view('admin.manage-users'); })->name('admin.manage-users');
+    Route::get('/financial-reports', function () { return view('admin.financial-reports'); })->name('admin.financial-reports');
 });
 
 
