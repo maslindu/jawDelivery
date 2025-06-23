@@ -126,7 +126,7 @@ document.querySelectorAll('.quantity-btn').forEach(button => {
     button.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        const cartId = e.currentTarget.dataset.id;
+        const cartId = button.dataset.id;
         if (!cartId) {
             console.error('No cart ID provided');
             return;
@@ -151,7 +151,7 @@ document.querySelectorAll('.quantity-btn').forEach(button => {
 
             const data = await response.json();
             display.textContent = data.quantity;
-
+            document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
             document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
             document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
             document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
@@ -165,14 +165,10 @@ document.querySelectorAll('.quantity-btn').forEach(button => {
 
 
 document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', async (e) => {
-        e.preventDefault()
-        const cartId = e.currentTarget.dataset.id;
-        const productItem = e.currentTarget.closest('.product-item');
-
+    button.addEventListener('click', function () {
+        const cartId = this.dataset.id;
 
         if (!cartId) {
-            console.error('Cart ID is missing');
             return;
         }
 
@@ -188,12 +184,13 @@ document.querySelectorAll('.delete-btn').forEach(button => {
             return response.json();
         })
         .then(data => {
-            console.log("nice")
             console.log('Deleted successfully', data);
-            if (productItem) {
-                productItem.remove();
-            }
-
+            document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
+            document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
+            document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
+            document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
+            document.querySelector('.price-breakdown .price-row:nth-child(3) span:nth-child(2)').textContent = `Rp ${data.adminFee.toLocaleString('id-ID')}`;
+            document.querySelector('.total-row span:nth-child(2)').textContent = `Rp ${data.total.toLocaleString('id-ID')}`;
         })
         .catch(error => {
             console.error('Failed to delete:', error);
@@ -201,15 +198,6 @@ document.querySelectorAll('.delete-btn').forEach(button => {
     });
 });
 
-
-
-        function updateTotals(data) {
-            document.querySelector('.subtotal-amount').textContent = `Rp ${formatRupiah(data.subtotal)}`;
-            document.querySelector('.shipping-amount').textContent = `Rp ${formatRupiah(data.shipping)}`;
-            document.querySelector('.adminfee-amount').textContent = `Rp ${formatRupiah(data.adminFee)}`;
-            document.querySelector('.total-amount').textContent = `Rp ${formatRupiah(data.total)}`;
-            document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${formatRupiah(data.subtotal)}`;
-        }
 
         function formatRupiah(number) {
             return number.toLocaleString('id-ID');

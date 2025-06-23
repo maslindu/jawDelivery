@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
     <link rel="stylesheet" href="{{ asset('css/menupopup.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/notification.css') }}">
 </head>
 <body>
     @include('components.header')
     @include('components.menupopup')
+    @include('components.notification')
 
     <main class="main-content">
         <section class="featured-section">
@@ -160,7 +162,7 @@
             behavior: 'smooth'
         });
 
-        setTimeout(updateScrollButtons, 150); // wait for smooth scroll
+        setTimeout(updateScrollButtons, 150);
     }
 
     window.addEventListener('load', updateScrollButtons);

@@ -1,3 +1,5 @@
+
+
 let currentMenuItem = null;
 let currentQuantity = 1;
 
@@ -110,6 +112,7 @@ fetch('/user/cart/add-item', {
 })
 .then(data => {
     console.log('Success:', data);
+    showToast("Item berhasil ditambahkan");
     closeMenuPopup();
 })
 .catch(error => {
@@ -133,3 +136,17 @@ document.addEventListener('keydown', function(event) {
         closeMenuPopup();
     }
 });
+
+function showToast(message) {
+    const container = document.getElementById('notification-container');
+
+    const toast = document.createElement('div');
+    toast.className = 'notification-toast';
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
