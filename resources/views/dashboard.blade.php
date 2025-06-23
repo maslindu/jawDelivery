@@ -7,9 +7,11 @@
     <title>JawDelivery</title>
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/menupopup.css') }}">
 </head>
 <body>
     @include('components.header')
+    @include('components.menupopup')
 
     <main class="main-content">
         <section class="featured-section">
@@ -59,18 +61,29 @@
                 </p>
                 @else
                     @foreach ($menuItems as $item)
-                        <div class="menu-item">
+                        <div class="menu-item"
+                            data-name="{{ $item->name }}"
+                            data-price="{{ $item->price }}"
+                            data-stock="{{ $item->stock }}"
+                            data-description="{{ $item->description }}"
+                            data-categories="{{ $item->categories->pluck('name')->implode(', ') }}"
+                            data-image-url="{{ $item->image_url }}">
+
                             @if (!empty($item->image_link))
-                                <img src="{{ asset('storage/' . $item->image_link) }}" alt="Menu Image">
+                                <div class="menu-item-image"
+                                    style="background-image: url('{{ $item->image_url }}');
+                                    background-size: cover;
+                                    background-position: center;">
+                                </div>
                             @else
                                 <div class="menu-item-image no-image-placeholder">
                                     <span>No Image</span>
                                 </div>
                             @endif
+
                             <p class="menu-item-name">{{ $item->name }}</p>
                         </div>
                     @endforeach
-
                 @endif
             </div>
         </section>
@@ -79,6 +92,7 @@
 
 </body>
 <script src="{{ asset('js/header.js') }}" defer></script>
+<script src="{{ asset('js/menupopup.js') }}" defer></script>
 <script>
     const scrollWrapper = document.querySelector('.category-scroll-wrapper');
     const scrollTarget = document.getElementById('category-filters');

@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const profileButton = document.getElementById('profileButton');
     const dropdown = document.getElementById('dropdown');
 
-    profileButton.addEventListener('click', function () {
+    profileButton?.addEventListener('click', function () {
         dropdown.classList.toggle('active');
     });
 
@@ -18,17 +18,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const confirmLogout = document.getElementById('confirmLogout');
     const cancelLogout = document.getElementById('cancelLogout');
 
-    logoutButton.addEventListener('click', function () {
+    logoutButton?.addEventListener('click', function () {
         logoutPopup.style.display = 'block';
         popupOverlay.style.display = 'block';
     });
 
-    cancelLogout.addEventListener('click', function () {
+    cancelLogout?.addEventListener('click', function () {
         logoutPopup.style.display = 'none';
         popupOverlay.style.display = 'none';
     });
 
-    confirmLogout.addEventListener('click', function () {
+    confirmLogout?.addEventListener('click', function () {
         document.getElementById('logoutForm').submit();
     });
 });
