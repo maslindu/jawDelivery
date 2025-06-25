@@ -39,7 +39,10 @@ body {
     font-size: 24px;
     font-weight: 700;
     color: #333;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #ef4444; 
 }
+
 
 .delete-address {
     color: #ef4444;
@@ -148,5 +151,6 @@ body {
 
     .address-title {
         font-size: 20px;
+        border-bottom: 2px solid #ef4444;
     }
 }

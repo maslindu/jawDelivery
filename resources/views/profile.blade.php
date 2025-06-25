@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,17 @@
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
 </head>
+
 <body>
     @include('components.header')
+
+    {{-- dummy untuk history --}}
+    @php
+        $latestTransaction = [
+            'date' => 'Sabtu, 30 Mei 2025',
+            'total' => 25000,
+        ];
+    @endphp
 
     <main class="main-content">
         <section class="profile-section">
@@ -21,49 +31,54 @@
             @endif
             <div class="profile-content">
                 <div class="photo-section">
-                    <div class="photo-placeholder" id="photoPreview"
-                        style="background-image: url('{{ Auth::user()->avatar_url }}');
+                    <div class="photo-placeholder" id="photoPreview" style="background-image: url('{{ Auth::user()->avatar_url }}');
                                 background-size: cover;
                                 background-position: center;">
                     </div>
                     <button class="upload-btn" id="uploadBtn">Upload Foto</button>
                 </div>
 
-                <form class="form-section" action="{{ route('user.update') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <input type="file" id="photoInput" name="avatar" accept="image/*" style="visibility: hidden; width: 0;">
-                        <div >
-                            <div class="form-group">
-                                <label class="form-label" for="username">Username</label>
-                                <input type="text" id="username" name="username" class="form-input" value="{{ Auth::user()->username }}">
-                            </div>
+                <form class="form-section" action="{{ route('user.update') }}" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <input type="file" id="photoInput" name="avatar" accept="image/*"
+                        style="visibility: hidden; width: 0;">
+                    <div>
+                        <div class="form-group">
+                            <label class="form-label" for="username">Username</label>
+                            <input type="text" id="username" name="username" class="form-input"
+                                value="{{ Auth::user()->username }}">
+                        </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="fullname">Nama Lengkap</label>
-                                <input type="text" id="fullname" name="fullName" class="form-input" value="{{ Auth::user()->fullName }}">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="fullname">Nama Lengkap</label>
+                            <input type="text" id="fullname" name="fullName" class="form-input"
+                                value="{{ Auth::user()->fullName }}">
+                        </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="email">Email</label>
-                                <input type="email" id="email" name="email" class="form-input" value="{{ Auth::user()->email }}">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" id="email" name="email" class="form-input"
+                                value="{{ Auth::user()->email }}">
+                        </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="phone">Nomor Telpon</label>
-                                <input type="tel" id="phone" name="phone" class="form-input" value="{{ Auth::user()->phone }}">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Nomor Telpon</label>
+                            <input type="tel" id="phone" name="phone" class="form-input"
+                                value="{{ Auth::user()->phone }}">
+                        </div>
 
-                            <div class="btn-container">
-                                <button type="submit" class="submit-btn">Submit Perubahan</button>
-                                <button type="button" class="password-btn"
-                                        onclick="window.location.href='{{ route('password.change') }}'">
-                                    Ubah Password
-                                </button>
+                        <div class="btn-container">
+                            <button type="submit" class="submit-btn">Submit Perubahan</button>
+                            <button type="button" class="password-btn"
+                                onclick="window.location.href='{{ route('password.change') }}'">
+                                Ubah Password
+                            </button>
 
-                            </div>
-                    </form>
-                </div>
+                        </div>
+                </form>
+            </div>
         </section>
 
         @role('pelanggan')
@@ -92,10 +107,13 @@
                     <h3 class="card-title">Transaksi Terbaru</h3>
                     <div class="address-content">
                         <div class="transaction-info">
-                            <div class="transaction-date">Sabtu, 30 Mei 2025</div>
-                            <div class="transaction-total">Total Pembayaran : Rp. 25.000</div>
+                            <div class="transaction-date">{{ $latestTransaction['date'] }}</div>
+                            <div class="transaction-total">Total Pembayaran : Rp.
+                            {{ number_format($latestTransaction['total'], 0, ',', '.') }}
                         </div>
-                        <a href="#" class="action-link" style="margin-bottom:12px">Lihat Seluruh Transaksi</a>
+                        </div>
+                        <a href="{{ route('user.history') }}" class="action-link" style="margin-bottom:12px">Lihat Seluruh
+                        Transaksi</a>
                     </div>
                 </div>
             </div>

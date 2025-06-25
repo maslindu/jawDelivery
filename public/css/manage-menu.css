@@ -1,0 +1,185 @@
+/* Reset & Base Styles */
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: rgb(251, 251, 251);
+    min-height: 100vh;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.box-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+   border: solid 1px #ddd;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.box-header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.box-header a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+}
+
+.box-header svg {
+  width: 20px;
+  height: 20px;
+}
+
+.add-category-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background-color: red;
+  color: white;
+  border: 2px solid black;
+  border-radius: 18px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.add-category-button:hover {
+  background-color: darkred;
+  color: #fff;
+}
+
+.add-category-button svg {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.add-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background-color: red;
+  color: white;
+  border: 2px solid black;
+  border-radius: 18px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.add-menu-button:hover {
+  background-color: darkred;
+  color: #fff;
+}
+
+.add-menu-button svg {
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.menu-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: solid 1px #ddd;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+}
+
+.menu-image {
+  background-color: #e9ecef;
+  width: 100%;
+  padding-top: 100%; /* Square ratio */
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.menu-category {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.menu-name {
+  font-weight: 600;
+  margin: 0.25rem 0;
+}
+
+.menu-price {
+  color: #ff4444;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.menu-action {
+  margin-top: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  color: #000;
+  font-size: 1.2rem;
+}
+
+.menu-action-options {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 0.5rem;
+  z-index: 10;
+}
+
+.menu-action-options.show {
+  display: block;
+}
+
+.menu-action-options button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-action-options button.delete {
+  color: #ff4444;
+  font-weight: bold;
+}
