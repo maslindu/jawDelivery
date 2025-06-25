@@ -11,7 +11,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $menuItems = Menu::all();
+        $menuItems = Menu::with('categories')->get();
         $categories = Category::all();
         return view('dashboard', compact('menuItems', 'categories'));
     }

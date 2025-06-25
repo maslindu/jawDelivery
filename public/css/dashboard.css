@@ -82,7 +82,12 @@ body {
 }
 
 .menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    width: 150px;
+    word-wrap: break-word;
 }
 
 .menu-item-image {
@@ -98,9 +103,12 @@ body {
 }
 
 .menu-item-name {
-    color: #000000;
-    font-size: 14px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    width: 100%;               /* Match parent width */
 }
+
 
 @media (max-width: 768px) {
     .header {

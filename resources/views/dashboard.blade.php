@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.cdnfonts.com/css/plus-jakarta-sans" rel="stylesheet">
     <title>JawDelivery</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/menupopup.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/notification.css') }}">
 </head>
 <body>
     @include('components.header')
+    @include('components.menupopup')
+    @include('components.notification')
 
     <main class="main-content">
         <section class="featured-section">
@@ -59,18 +64,30 @@
                 </p>
                 @else
                     @foreach ($menuItems as $item)
-                        <div class="menu-item">
+                        <div class="menu-item"
+                            data-id="{{ $item->id }}"
+                            data-name="{{ $item->name }}"
+                            data-price="{{ $item->price }}"
+                            data-stock="{{ $item->stock }}"
+                            data-description="{{ $item->description }}"
+                            data-categories="{{ $item->categories->pluck('name')->implode(', ') }}"
+                            data-image-url="{{ $item->image_url }}">
+
                             @if (!empty($item->image_link))
-                                <img src="{{ asset('storage/' . $item->image_link) }}" alt="Menu Image">
+                                <div class="menu-item-image"
+                                    style="background-image: url('{{ $item->image_url }}');
+                                    background-size: cover;
+                                    background-position: center;">
+                                </div>
                             @else
                                 <div class="menu-item-image no-image-placeholder">
                                     <span>No Image</span>
                                 </div>
                             @endif
+
                             <p class="menu-item-name">{{ $item->name }}</p>
                         </div>
                     @endforeach
-
                 @endif
             </div>
         </section>
@@ -79,6 +96,7 @@
 
 </body>
 <script src="{{ asset('js/header.js') }}" defer></script>
+<script src="{{ asset('js/menupopup.js') }}" defer></script>
 <script>
     const scrollWrapper = document.querySelector('.category-scroll-wrapper');
     const scrollTarget = document.getElementById('category-filters');
@@ -144,7 +162,7 @@
             behavior: 'smooth'
         });
 
-        setTimeout(updateScrollButtons, 150); // wait for smooth scroll
+        setTimeout(updateScrollButtons, 150);
     }
 
     window.addEventListener('load', updateScrollButtons);

@@ -1,3 +1,4 @@
+
 * {
     margin: 0;
     padding: 0;
@@ -5,17 +6,18 @@
 }
 
 body {
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: #f5f5f5;
     min-height: 100vh;
+    padding: 0;
 }
 
 .main-content {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr 400px;
+    display: flex;
+    align-items: flex-start;
     gap: 20px;
 }
 
@@ -23,22 +25,18 @@ body {
     background: white;
     border: 2px solid #333;
     border-radius: 15px;
+    min-width: 600px;
+    max-width: 600px;
     padding: 25px;
-
 }
 
 .section-title {
     font-size: 20px;
     font-weight: 700;
-    color: #333;
-    border-bottom: 2px solid #ff4444;
-    padding-bottom: 4px;
-    margin: 0 auto 20px auto;  
-    display: block;            
-    width: fit-content;        
     text-align: center;
+    margin-bottom: 20px;
+    color: #333;
 }
-
 
 .product-item {
     display: flex;
@@ -140,13 +138,15 @@ body {
     padding: 8px 16px;
     font-size: 14px;
     cursor: pointer;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .summary-section {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-width: 400px;
+    max-width: 400px;
 }
 
 .summary-card {
@@ -157,7 +157,6 @@ body {
 }
 
 .address-section {
-    margin-bottom: 20px;
 }
 
 .address-info {
@@ -184,6 +183,7 @@ body {
 
 .address-text {
     flex: 1;
+    display: flex;
 }
 
 .address-name {
@@ -204,15 +204,14 @@ body {
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.payment-method {
+.payment-methodss {
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .method-title {
@@ -229,38 +228,7 @@ body {
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    font-family: "Plus Jakarta Sans", sans-serif;
-}
-
-.payment-selector {
-    position: relative;
-    display: inline-block;
-}
-
-.payment-dropdown {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    background: white;
-    border: 2px solid black;
-    border-radius: 12px;
-    width: 130px;
-    display: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    z-index: 999;
-}
-
-.payment-option {
-    padding: 10px 16px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    color: black;
-    transition: background 0.2s;
-}
-
-.payment-option:hover {
-    background-color: #f1f1f1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .price-breakdown {
@@ -293,20 +261,20 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 14px;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .confirm-btn {
     width: 100%;
     background: #ff4444;
-    color: black;
-    border: 2px solid #000;
+    color: white;
+    border: none;
     border-radius: 25px;
     padding: 15px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .confirm-btn:hover {
@@ -330,8 +298,44 @@ body {
 }
 
 .address-name-row {
+    align-items: flex-start;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 2px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        align-items: stretch;
+
+    }
+    .summary-section {
+        max-width: none;
+    }
+    .order-section {
+        min-width: 0px;
+    }
+}
+
+.confirm-btn.disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.product-stock {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+.warn-msg {
+    color: #d9534f; /* Bootstrap's danger color (red) */
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    display: block;
 }
