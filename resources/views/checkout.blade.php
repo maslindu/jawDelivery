@@ -9,9 +9,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
     <link rel="stylesheet" href="{{ asset('css/checkout.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/paymentpopup.css') }}">
 </head>
 <body>
     @include('components.header')
+    @include('components.paymentpopup')
 
     <main class="main-content">
         <div class="order-section">
@@ -44,7 +46,7 @@
 
             <div class="order-total">
                 <span class="total-text">Total Pesanan :  Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
-                <button class="notes-btn">Catatan</button>
+                <textarea id="order-notes" name="notes" class="notes-input" placeholder="Masukkan catatan untuk pesanan..." rows="2" style="padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc;"></textarea>
             </div>
         </div>
 
@@ -81,9 +83,11 @@
             </div>
 
             <div class="summary-card payment-card">
-                <div class="payment-method">
+                <div class="payment-methodss">
                     <div class="method-title">Metode Pembayaran</div>
-                    <button class="paymentOption-btn">Transfer</button>
+                    <button id="openPaymentBtn" class="paymentOption-btn">
+                        Pilih
+                    </button>
                 </div>
 
                 <div class="price-breakdown">
@@ -105,14 +109,14 @@
                     </div>
 
                 </div>
+                <div id="addressInfo" data-address="{{ $userAddress ? 'present' : 'null' }}"></div>
 
                 <div class="promo-section">
                     <input type="text" class="promo-input" placeholder="Masukkan Kode Promo">
                 </div>
+                <span class="warn-msg" id="warn-msg"> </span>
 
-                <button
-                    class="confirm-btn {{ is_null($userAddress) ? 'disabled' : '' }}"
-                    {{ is_null($userAddress) ? 'disabled' : '' }}>
+                <button class="confirm-btn">
                     Konfirmasi Pembayaran
                 </button>
             </div>
@@ -122,120 +126,6 @@
     </main>
 
     <script src="{{ asset('js/header.js') }}" defer></script>
-    <script>
-        document.querySelectorAll('.quantity-btn').forEach(button => {
-            button.addEventListener('click', (e) => handleQuantityChange(e, button));
-        });
-
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', deleteCartItemHandler);
-        });
-        function deleteCartItemHandler(e) {
-            e.preventDefault();
-            const button = e.currentTarget;
-            const cartId = button.dataset.id;
-
-            if (!cartId) {
-                console.error('No cart ID found');
-                return;
-            }
-
-            deleteCartItem(cartId);
-        }
-
-
-        async function handleQuantityChange(e, button) {
-            e.preventDefault();
-
-            const cartId = button.dataset.id;
-            if (!cartId) return console.error('No cart ID provided');
-
-            const isIncrement = button.classList.contains('increment');
-            const display = button.parentElement.querySelector('.quantity-display');
-            let quantity = parseInt(display.textContent);
-            const stock = parseInt(button.dataset.stock);
-
-            if (!isIncrement && quantity === 1) {
-                await deleteCartItem(cartId);
-            } else {
-                const newQuantity = isIncrement ? quantity + 1 : quantity - 1;
-                if (newQuantity > stock) return;
-
-                await updateCartQuantity(cartId, newQuantity, display, button.parentElement);
-            }
-        }
-
-        async function updateCartQuantity(cartId, quantity, display) {
-            try {
-                const response = await fetch(`/cart/${cartId}/quantity`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({ quantity })
-                });
-
-                if (!response.ok) throw new Error("Server error");
-
-                const data = await response.json();
-                display.textContent = data.quantity;
-                updatePriceSummary(data);
-            } catch (error) {
-                console.error("Failed to update quantity:", error);
-            }
-        }
-
-        async function deleteCartItem(cartId) {
-            try {
-                const response = await fetch(`/cart/${cartId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) throw new Error('Failed to delete item');
-
-                const data = await response.json();
-
-                // Remove item from DOM
-                document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
-                updatePriceSummary(data);
-            } catch (error) {
-                console.error('Failed to delete:', error);
-            }
-        }
-
-        function updatePriceSummary(data) {
-            document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${data.subtotal.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(1) span:nth-child(2)').textContent = `Rp ${data.subtotal.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(2) span:nth-child(2)').textContent = `Rp ${data.shipping.toLocaleString('id-ID')}`;
-            document.querySelector('.price-breakdown .price-row:nth-child(3) span:nth-child(2)').textContent = `Rp ${data.adminFee.toLocaleString('id-ID')}`;
-            document.querySelector('.total-row span:nth-child(2)').textContent = `Rp ${data.total.toLocaleString('id-ID')}`;
-        }
-
-
-
-            function formatRupiah(number) {
-                return number.toLocaleString('id-ID');
-            }
-        </script>
-
-    <script>
-        // Notes button
-        document.querySelector('.notes-btn').addEventListener('click', function() {
-            const note = prompt('Masukkan catatan untuk pesanan:');
-            if (note) {
-                console.log('Catatan:', note);
-            }
-        });
-
-        // Confirm payment
-        document.querySelector('.confirm-btn').addEventListener('click', function() {
-            alert('Mengarahkan ke halaman pembayaran...');
-        });
-    </script>
+    <script src="{{ asset('js/checkout.js') }}" defer></script>
 </body>
 </html>

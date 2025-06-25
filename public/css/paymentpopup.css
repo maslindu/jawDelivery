@@ -1,0 +1,274 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.demo-button {
+    background-color: #ef4444;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+.demo-button:hover {
+    background-color: #dc2626;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.close-button:hover {
+    background-color: #f3f4f6;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 24px;
+}
+
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.payment-method {
+    border: 2px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-method:hover {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.payment-method.active {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.payment-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.payment-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.bank-transfer { background-color: #1e40af; }
+.qris { background-color: #059669; }
+.gopay { background-color: #00aa5b; }
+.shopeepay { background-color: #ee4d2d; }
+.dana { background-color: #118ab2; }
+.cash { background-color: #6b7280; }
+
+.payment-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.payment-description {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 12px;
+}
+
+.payment-instructions {
+    display: none;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 12px;
+}
+
+.payment-method.active .payment-instructions {
+    display: block;
+}
+
+.instruction-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+
+.instruction-steps {
+    list-style: none;
+    counter-reset: step-counter;
+}
+
+.instruction-steps li {
+    counter-increment: step-counter;
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 6px;
+    padding-left: 24px;
+    position: relative;
+}
+
+.instruction-steps li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #ef4444;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.account-info {
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+.account-info strong {
+    color: #1e40af;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .modal-header,
+    .modal-body {
+        padding: 16px;
+    }
+}
+/* Add this to your existing CSS */
+
+.modal-footer {
+    padding: 16px 24px 24px;
+    border-top: 1px solid #e5e5e5;
+    background-color: #fafafa;
+}
+
+.pilih-button {
+    width: 100%;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.pilih-button.enabled {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.pilih-button.enabled:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+}
+
+.pilih-button.enabled:active {
+    transform: translateY(0);
+}
