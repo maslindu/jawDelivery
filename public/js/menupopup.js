@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 58ada01a9633e7ad0c85dc6e77beef88805d9ca8
 let currentMenuItem = null;
 let currentQuantity = 1;
 
@@ -11,7 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         item.addEventListener('click', function () {
             const menuData = {
+<<<<<<< HEAD
                 id: item.dataset.id,
+=======
+>>>>>>> 58ada01a9633e7ad0c85dc6e77beef88805d9ca8
                 name: item.dataset.name,
                 price: parseFloat(item.dataset.price),
                 stock: parseInt(item.dataset.stock),
@@ -81,8 +87,15 @@ function updateButtonStates() {
     const decrementBtn = document.getElementById('decrementBtn');
     const incrementBtn = document.getElementById('incrementBtn');
 
+<<<<<<< HEAD
     decrementBtn.disabled = currentQuantity <= 1;
 
+=======
+    // Disable decrement if quantity is 1
+    decrementBtn.disabled = currentQuantity <= 1;
+
+    // Disable increment if quantity equals stock
+>>>>>>> 58ada01a9633e7ad0c85dc6e77beef88805d9ca8
     if (currentMenuItem) {
         incrementBtn.disabled = currentQuantity >= currentMenuItem.stock;
     }
@@ -90,6 +103,7 @@ function updateButtonStates() {
 
 function addToCart() {
     if (currentMenuItem) {
+<<<<<<< HEAD
 fetch('/user/cart/add-item', {
     method: 'POST',
     headers: {
@@ -122,6 +136,39 @@ fetch('/user/cart/add-item', {
     }
 }
 
+=======
+        // Here you can implement your add to cart logic
+        console.log(`Adding ${currentQuantity} of ${currentMenuItem.name} to cart`);
+
+        // You can make an AJAX request to your Laravel backend here
+        // Example:
+        /*
+        fetch('/add-to-cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                menu_id: currentMenuItem.id,
+                quantity: currentQuantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle success
+            closeMenuPopup();
+        });
+        */
+
+        // For now, just close the popup
+        alert(`Added ${currentQuantity} ${currentMenuItem.name} to cart!`);
+        closeMenuPopup();
+    }
+}
+
+// Close popup when clicking outside
+>>>>>>> 58ada01a9633e7ad0c85dc6e77beef88805d9ca8
 document.addEventListener('click', function(event) {
     const popup = document.getElementById('menuPopup');
     const popupContainer = document.querySelector('.menu-popup-container');
@@ -131,11 +178,16 @@ document.addEventListener('click', function(event) {
     }
 });
 
+<<<<<<< HEAD
+=======
+// Close popup with Escape key
+>>>>>>> 58ada01a9633e7ad0c85dc6e77beef88805d9ca8
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeMenuPopup();
     }
 });
+<<<<<<< HEAD
 
 function showToast(message) {
     const container = document.getElementById('notification-container');
@@ -150,3 +202,5 @@ function showToast(message) {
         toast.remove();
     }, 3000);
 }
+=======
+>>>>>>> 58ada01a9633e7ad0c85dc6e77beef88805d9ca8

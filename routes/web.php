@@ -33,6 +33,11 @@ Route::middleware(['role:admin|pelanggan'])->group(function () {
 
 Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'admin'])->name('admin.dashboard');
+    Route::get('/orders', function () { return view('admin.orders'); })->name('admin.orders');
+    Route::get('/manage-menu', function () { return view('admin.manage-menu'); })->name('admin.manage-menu');
+    Route::get('/manage-driver', function () { return view('admin.manage-driver'); })->name('admin.manage-driver');
+    Route::get('/manage-users', function () { return view('admin.manage-users'); })->name('admin.manage-users');
+    Route::get('/financial-reports', function () { return view('admin.financial-reports'); })->name('admin.financial-reports');
 });
 
 
@@ -67,3 +72,7 @@ Route::get('/favorite-menu', function () {
 Route::get('/history', function () {
     return view('history');
 })->name('user.history');
+
+Route::get('/admin/orders-detail/{code?}', function ($code = null) {
+    return view('admin.orders-detail', ['code' => $code]);
+});

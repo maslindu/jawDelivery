@@ -107,10 +107,13 @@
                     <h3 class="card-title">Transaksi Terbaru</h3>
                     <div class="address-content">
                         <div class="transaction-info">
-                            <div class="transaction-date">Sabtu, 30 Mei 2025</div>
-                            <div class="transaction-total">Total Pembayaran : Rp. 25.000</div>
+                            <div class="transaction-date">{{ $latestTransaction['date'] }}</div>
+                            <div class="transaction-total">Total Pembayaran : Rp.
+                            {{ number_format($latestTransaction['total'], 0, ',', '.') }}
                         </div>
-                        <a href="#" class="action-link" style="margin-bottom:12px">Lihat Seluruh Transaksi</a>
+                        </div>
+                        <a href="{{ route('user.history') }}" class="action-link" style="margin-bottom:12px">Lihat Seluruh
+                        Transaksi</a>
                     </div>
                 </div>
             </div>
