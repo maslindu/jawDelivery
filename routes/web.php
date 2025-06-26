@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,6 +52,13 @@ Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
         return view('change-password');
     })->name('password.change');
 });
+
+
+Route::prefix('order')->middleware(['auth', 'role:pelanggan'])->group(function () {
+    Route::post('/', [OrderController::class, 'store'])->name('order.store');
+    Route::get('/{id}', [OrderController::class, 'show'])->name('order.show');
+});
+
 
 Route::get('/checkout', [CheckoutController::class, 'index'])
     ->middleware('role:pelanggan')

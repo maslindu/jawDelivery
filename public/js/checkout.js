@@ -17,7 +17,6 @@ function init() {
 
     bindQuantityButtons();
     bindDeleteButtons();
-    bindNotesInput();
     bindConfirmButton();
     bindModalEvents();
 
@@ -121,35 +120,21 @@ function formatRupiah(number) {
     return number.toLocaleString('id-ID');
 }
 
-function bindNotesInput() {
-    // Optional: auto-save or validation logic can be added here
-    const notesInput = document.querySelector('.notes-input');
-    if (notesInput) {
-        notesInput.addEventListener('input', () => {
-            console.log('Catatan:', notesInput.value);
-        });
-    }
-}
-
 function bindConfirmButton() {
     const confirmBtn = document.querySelector('.confirm-btn');
     if (!confirmBtn) return;
 
-    confirmBtn.disabled = selectedPaymentMethod === null;
-        if (selectedPaymentMethod === null) {
+    if (selectedPaymentMethod === null) {
         confirmBtn.classList.add('disabled');
     }
 
     confirmBtn.addEventListener('click', async () => {
-        if (!selectedPaymentMethod) {
-            alert('Silakan pilih metode pembayaran terlebih dahulu.');
-            return;
-        }
-
         const notes = document.querySelector('.notes-input')?.value.trim() || '';
+        console.log("Selected payment method:", selectedPaymentMethod);
+        console.log("notes:", notes);
 
         try {
-            const response = await fetch('/checkout/confirm', {
+            const response = await fetch('/order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -161,8 +146,7 @@ function bindConfirmButton() {
                 })
             });
 
-            const result = await response.json();
-            alert(result.message || 'Berhasil dikonfirmasi.');
+            const result = await response.text();
         } catch (err) {
             console.error('Error:', err);
         }
@@ -248,8 +232,6 @@ function closePaymentModal() {
     const modal = document.getElementById('paymentModal');
     if (modal) modal.classList.remove('active');
     document.body.style.overflow = 'auto';
-
-    selectedPaymentMethod = null;
 
     const pilihButton = document.getElementById('pilihButton');
     if (pilihButton) {
