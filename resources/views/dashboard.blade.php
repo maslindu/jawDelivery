@@ -17,13 +17,9 @@
     @include('components.notification')
 
     <main class="main-content">
-        <section class="featured-section">
-            <div class="featured-menu">
-                <h2 class="featured-title">Featured Menu</h2>
-            </div>
-        </section>
 
         <section class="menu-section">
+            <div style="height:25px"></div>
             <h2 class="menu-title">OUR MENU</h2>
 
             <div class="category-scroll-wrapper">
@@ -71,7 +67,8 @@
                             data-stock="{{ $item->stock }}"
                             data-description="{{ $item->description }}"
                             data-categories="{{ $item->categories->pluck('name')->implode(', ') }}"
-                            data-image-url="{{ $item->image_url }}">
+                            data-image-url="{{ $item->image_url }}"
+                            data-is-fav="{{$item->is_fav}}">
 
                             @if (!empty($item->image_link))
                                 <div class="menu-item-image"
@@ -97,6 +94,28 @@
 </body>
 <script src="{{ asset('js/header.js') }}" defer></script>
 <script src="{{ asset('js/menupopup.js') }}" defer></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchBox = document.getElementById('searchInput');
+        const menuItems = document.querySelectorAll('.menu-item');
+
+        searchBox.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+
+            menuItems.forEach(item => {
+                const name = item.dataset.name.toLowerCase();
+                if (name.includes(query)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+
+
 <script>
     const scrollWrapper = document.querySelector('.category-scroll-wrapper');
     const scrollTarget = document.getElementById('category-filters');

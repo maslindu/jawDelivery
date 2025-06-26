@@ -7,7 +7,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
             </svg>
-            <input type="text" class="search-input" placeholder="Search Menu">
+            <input type="text" class="search-input" id='searchInput' placeholder="Search Menu">
         </div>
     @endif
 
@@ -96,7 +96,7 @@
                         <div class="profile-option">Daftar Transaksi</div>
                     </a>
 
-                    <a href="{{ route('user.favorite') }}">
+                    <a href="{{ route('favorite.index') }}">
                         <div class="profile-option">Menu Favorit</div>
                     </a>
                 @endif

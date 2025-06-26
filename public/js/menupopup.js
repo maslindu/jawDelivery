@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 stock: parseInt(item.dataset.stock),
                 description: item.dataset.description,
                 categories : item.dataset.categories,
-                image_url: item.dataset.imageUrl || null
+                image_url: item.dataset.imageUrl || null,
+                is_fav: item.dataset.isFav
             };
 
             openMenuPopup(menuData);
@@ -47,6 +48,8 @@ function openMenuPopup(menuData) {
         imageContainer.style.backgroundImage = 'none';
         imageContainer.textContent = 'No Image';
     }
+
+    updateHeartIcon(menuData.is_fav);
 
     updateButtonStates();
 
@@ -149,4 +152,61 @@ function showToast(message) {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+
+document.getElementById('favoriteToggleBtn').addEventListener('click', e => toggleFavorite(e));
+
+function toggleFavorite(event) {
+    event?.preventDefault();
+    if (!currentMenuItem) return;
+
+    const isCurrentlyFav = currentMenuItem.is_fav;
+
+    if (isCurrentlyFav) {
+        fetch(`/favorites?menu_id=${currentMenuItem.id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to remove favorite');
+            currentMenuItem.is_fav = false;
+            updateHeartIcon(false);
+        })
+        .catch(console.error);
+    } else {
+        // Add favorite
+        fetch('/favorites', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ menu_id: currentMenuItem.id })
+        }).then(response => {
+            if (!response.ok) throw new Error('Failed to add favorite');
+            currentMenuItem.is_fav = true;
+            updateHeartIcon(true);
+        }).catch(console.error);
+    }
+}
+
+function updateHeartIcon(isFav) {
+    const heartIcon = document.getElementById('heartIcon');
+    if (isFav) {
+        heartIcon.classList.add('filled');
+    } else {
+        heartIcon.classList.remove('filled');
+    }
+}
+
+function bindFavoriteButtonListener() {
+    const favoriteBtn = document.getElementById('favoriteToggleBtn');
+    if (favoriteBtn) {
+        favoriteBtn.replaceWith(favoriteBtn.cloneNode(true));
+        document.getElementById('favoriteToggleBtn').addEventListener('click', toggleFavorite);
+    }
 }

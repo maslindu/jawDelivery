@@ -42,4 +42,10 @@ class User extends Authenticatable implements LaratrustUser
             ? Storage::url('avatar/' . $this->avatar_link)
             : Storage::url('avatar/default-avatar.jpg');
     }
+
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, 'user_menu')
+                    ->withTimestamps();
+    }
 }

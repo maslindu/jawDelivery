@@ -212,3 +212,14 @@
         justify-content: center;
     }
 }
+
+.favorite-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 1rem;
+    padding: 0;
+}
+.favorite-btn svg.filled {
+    fill: #fe4a49;
+}

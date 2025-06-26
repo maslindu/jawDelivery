@@ -11,8 +11,13 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $menuItems = Menu::with('categories')->get();
+        $user = Auth::user();
         $categories = Category::all();
+        $favMenuIds = $user->menus->pluck('id')->toArray();
+        $menuItems = Menu::with('categories')->get();
+        $menuItems->each(function ($menu) use ($favMenuIds) {
+            $menu->is_fav = in_array($menu->id, $favMenuIds);
+        });
         return view('dashboard', compact('menuItems', 'categories'));
     }
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\FavoriteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -74,9 +75,12 @@ Route::delete('/cart/{id}', [CartController::class, 'destroy'])->middleware('rol
 
 
 
-Route::get('/favorite-menu', function () {
-    return view('favorite-menu');
-})->name('user.favorite');
+Route::middleware(['auth', 'role:pelanggan'])->prefix('favorites')->name('favorite.')->group(function () {
+    Route::get('/', [FavoriteController::class, 'index'])->name('index');
+    Route::post('/', [FavoriteController::class, 'store'])->name('store');
+    Route::delete('/', [FavoriteController::class, 'destroy'])->name('destroy');
+});
+
 
 
 Route::get('/admin/orders-detail/{code?}', function ($code = null) {
