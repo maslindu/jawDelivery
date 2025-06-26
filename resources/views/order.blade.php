@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">   
     <title>JawDelivery - Status Pesanan</title>
     <link href="https://fonts.cdnfonts.com/css/plus-jakarta-sans" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/header.css') }}">
@@ -11,12 +12,10 @@
 <body>
     @include('components.header')
 
-    <main class="main-content" data-order-status="{{ $order->status }}">
-
+    <main class="main-content" data-order-id="{{ $order->id }}" data-order-status="{{ $order->status }}">
         <div class="waiting-container">
             <div class="status-section">
-                <div class="status-icon" id="statusIcon">
-                </div>
+                <div class="status-icon" id="statusIcon"></div>
                 <h1 class="status-title" id="statusTitle">Status Pesanan</h1>
                 <p class="status-subtitle" id="statusSubtitle">Mohon tunggu update status pesanan Anda.</p>
             </div>
@@ -53,7 +52,6 @@
                         </div>
                     </div>
 
-                    <!-- Payment Details -->
                     <div class="payment-section">
                         <h3 class="section-title">Rincian Pembayaran</h3>
                         <div class="payment-details">
@@ -76,7 +74,6 @@
                         </div>
                     </div>
 
-                    <!-- Delivery Info -->
                     <div class="delivery-section">
                         <h3 class="section-title">Informasi Pengiriman</h3>
                         <div class="delivery-info">
@@ -102,7 +99,6 @@
                     </div>
                 </div>
 
-                <!-- Status Footer -->
                 <div class="invoice-footer">
                     <div class="status-indicator">
                         <div class="status-dot" id="statusDot"></div>
@@ -113,6 +109,14 @@
             </div>
         </div>
     </main>
+
+    <!-- Hanya pass data ke JavaScript -->
+    <script>
+        window.orderData = {
+            orderId: '{{ $order->id }}',
+            currentStatus: '{{ $order->status }}'
+        };
+    </script>
 
     <script src="{{ asset('js/header.js') }}" defer></script>
     <script src="{{ asset('js/order.js') }}" defer></script>
