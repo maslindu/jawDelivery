@@ -4,7 +4,7 @@ let currentMenuItem = null;
 let currentQuantity = 1;
 
 document.addEventListener('DOMContentLoaded', function () {
-    const menuItems = document.querySelectorAll('.menu-item');
+    const menuItems = document.querySelectorAll('#menuItem');
 
     menuItems.forEach(function (item) {
         item.style.cursor = 'pointer';

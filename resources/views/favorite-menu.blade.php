@@ -7,6 +7,8 @@
    <title>JawDelivery - Menu Favorit</title>
    <link href="https://fonts.cdnfonts.com/css/plus-jakarta-sans" rel="stylesheet">
    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/menupopup.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/notification.css') }}">
    <style>
       body {
          font-family: 'Plus Jakarta Sans', sans-serif;
@@ -44,7 +46,7 @@
          overflow: hidden;
          display: flex;
          flex-direction: column;
-         align-items: center;
+         align-menus: center;
          padding: 16px;
          transition: transform 0.2s ease;
       }
@@ -85,12 +87,22 @@
 </head>
 <body>
    @include('components.header')
+    @include('components.menupopup')
+    @include('components.notification')
 
    <div class="favorite-container">
       <h2 class="favorite-title">Menu Favorit Anda</h2>
       <div class="menu-list">
          @foreach($menus as $menu)
-            <div class="menu-card">
+            <div class="menu-card" id='menuItem'
+                data-id="{{ $menu->id }}"
+                data-name="{{ $menu->name }}"
+                data-price="{{ $menu->price }}"
+                data-stock="{{ $menu->stock }}"
+                data-description="{{ $menu->description }}"
+                data-categories="{{ $menu->categories->pluck('name')->implode(', ') }}"
+                data-image-url="{{ $menu->image_url }}"
+                data-is-fav="1">
                   <div style="
                         width:160px;
                         height:120px;
@@ -117,6 +129,7 @@
    </div>
 
    <script src="{{ asset('js/header.js') }}" defer></script>
+   <script src="{{ asset('js/menupopup.js') }}" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const removeButtons = document.querySelectorAll('.remove-btn');

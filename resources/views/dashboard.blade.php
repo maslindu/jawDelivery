@@ -60,7 +60,7 @@
                 </p>
                 @else
                     @foreach ($menuItems as $item)
-                        <div class="menu-item"
+                        <div class="menu-item" id='menuItem'
                             data-id="{{ $item->id }}"
                             data-name="{{ $item->name }}"
                             data-price="{{ $item->price }}"
