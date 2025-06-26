@@ -131,18 +131,50 @@ class OrderController extends Controller
             
             $order = Order::where('id', $id)
                 ->where('user_id', $user->id)
-                ->firstOrFail();
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order tidak ditemukan'
+                ], 404);
+            }
 
             return response()->json([
                 'success' => true,
                 'status' => $order->status,
-                'updated_at' => $order->updated_at->format('Y-m-d H:i:s')
+                'status_label' => $this->getStatusLabel($order->status),
+                'updated_at' => $order->updated_at->format('Y-m-d H:i:s'),
+                'order_id' => $order->id
             ]);
         } catch (\Exception $e) {
+            Log::error('Error getting order status', [
+                'order_id' => $id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Order tidak ditemukan'
-            ], 404);
+                'message' => 'Terjadi kesalahan saat mengambil status pesanan'
+            ], 500);
+        
         }
+    }
+
+    // Helper method untuk mendapatkan label status
+    private function getStatusLabel($status)
+    {
+        $labels = [
+            'pending' => 'Menunggu',
+            'processing' => 'Diproses',
+            'shipped' => 'Dikirim',
+            'delivered' => 'Selesai',
+            'completed' => 'Selesai',
+            'cancelled' => 'Dibatalkan',
+            'failed' => 'Gagal',
+        ];
+
+        return $labels[$status] ?? $status;
     }
 }

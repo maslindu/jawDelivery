@@ -718,3 +718,75 @@ header {
         opacity: 1;
     }
 }
+
+/* Tambahkan di akhir file order.css */
+
+/* Status notification styles */
+.status-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideInRight 0.3s ease-out;
+    max-width: 300px;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.notification-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Improved status badge transitions */
+.status-badge {
+    transition: all 0.3s ease !important;
+}
+
+.status-badge:hover {
+    transform: scale(1.02) !important;
+}
+
+/* Loading state */
+.status-badge.loading {
+    opacity: 0.6;
+    transform: scale(0.95);
+}
+
+/* Responsive notification */
+@media (max-width: 640px) {
+    .status-notification {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
