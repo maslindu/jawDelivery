@@ -13,14 +13,6 @@
 <body>
     @include('components.header')
 
-    {{-- dummy untuk history --}}
-    @php
-        $latestTransaction = [
-            'date' => 'Sabtu, 30 Mei 2025',
-            'total' => 25000,
-        ];
-    @endphp
-
     <main class="main-content">
         <section class="profile-section">
             <h2 class="profile-title">Profil Anda</h2>
@@ -107,9 +99,9 @@
                     <h3 class="card-title">Transaksi Terbaru</h3>
                     <div class="address-content">
                         <div class="transaction-info">
-                            <div class="transaction-date">{{ $latestTransaction['date'] }}</div>
+                            <div class="transaction-date">{{ $firstOrder['date'] }}</div>
                             <div class="transaction-total">Total Pembayaran : Rp.
-                            {{ number_format($latestTransaction['total'], 0, ',', '.') }}
+                            {{ number_format($firstOrder['total'], 0, ',', '.') }}
                         </div>
                         </div>
                         <a href="{{ route('user.history') }}" class="action-link" style="margin-bottom:12px">Lihat Seluruh

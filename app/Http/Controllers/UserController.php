@@ -8,6 +8,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Models\UserAddress;
+use App\Models\Order;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -19,8 +21,23 @@ class UserController extends Controller
             ->where('is_primary', true)
             ->first();
 
+        $firstOrder = Order::where('user_id', Auth::id())
+            ->latest('created_at')
+            ->first();
+
+        if ($firstOrder) {
+            $transformedOrder = [
+                'date' => Carbon::parse($firstOrder->created_at)->translatedFormat('d F Y'),
+                'total' => $firstOrder->subtotal + $firstOrder->shipping_fee + $firstOrder->admin_fee,
+            ];
+        } else {
+            $transformedOrder = null;
+        }
+
+
         return view('profile', [
             'primaryAddress' => $primaryAddress,
+            'firstOrder' => $transformedOrder
         ]);
     }
 

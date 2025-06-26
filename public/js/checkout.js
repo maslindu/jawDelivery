@@ -14,7 +14,6 @@ function init() {
         confirmBtn.classList.add('disabled');
     }
     updateConfirmButtonState();
-
     bindQuantityButtons();
     bindDeleteButtons();
     bindConfirmButton();
@@ -146,7 +145,9 @@ function bindConfirmButton() {
                 })
             });
 
-            const result = await response.text();
+            const result = await response.json();
+            console.log(result)
+            window.location.replace(`/order/${result.order_id}`);
         } catch (err) {
             console.error('Error:', err);
         }
@@ -198,10 +199,15 @@ function togglePaymentMethod(element) {
 function updateConfirmButtonState() {
     const confirmBtn = document.querySelector('.confirm-btn');
     const warnMsg = document.getElementById('warn-msg');
+    const cartItems = document.querySelectorAll('.product-item');
 
     if (!confirmBtn) return;
 
-    if (!selectedPaymentMethod) {
+    if (cartItems.length === 0) {
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('disabled');
+        if (warnMsg) warnMsg.textContent = 'Keranjang kosong';
+    } else if (!selectedPaymentMethod) {
         confirmBtn.disabled = true;
         confirmBtn.classList.add('disabled');
         if (warnMsg) warnMsg.textContent = 'Pilih metode pembayaran';
@@ -215,6 +221,7 @@ function updateConfirmButtonState() {
         if (warnMsg) warnMsg.textContent = '';
     }
 }
+
 
 
 function confirmPaymentMethod() {

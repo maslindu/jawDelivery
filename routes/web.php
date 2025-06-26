@@ -58,6 +58,7 @@ Route::prefix('order')->middleware(['auth', 'role:pelanggan'])->group(function (
     Route::post('/', [OrderController::class, 'store'])->name('order.store');
     Route::get('/{id}', [OrderController::class, 'show'])->name('order.show');
 });
+Route::get('/history', [OrderController::class, 'index'])->name('user.history');
 
 
 Route::get('/checkout', [CheckoutController::class, 'index'])
@@ -77,9 +78,6 @@ Route::get('/favorite-menu', function () {
     return view('favorite-menu');
 })->name('user.favorite');
 
-Route::get('/history', function () {
-    return view('history');
-})->name('user.history');
 
 Route::get('/admin/orders-detail/{code?}', function ($code = null) {
     return view('admin.orders-detail', ['code' => $code]);

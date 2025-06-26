@@ -17,58 +17,36 @@
    <div class="history-container">
       <h2 class="history-title">Riwayat Transaksi</h2>
 
-      @php
-      $histories = [
-         [
-           'order_number' => 'INV-20240601-001',
-           'date' => '2024-06-01',
-           'items' => 3,
-           'buyer' => 'Budi Santoso',
-           'payment' => 'Tunai',
-           'status' => 'Selesai',
-           'total' => 120000,
-         ],
-         [
-           'order_number' => 'INV-20240601-002',
-           'date' => '2024-06-01',
-           'items' => 2,
-           'buyer' => 'Siti Aminah',
-           'payment' => 'Transfer',
-           'status' => 'Diproses',
-           'total' => 85000,
-         ],
-         [
-           'order_number' => 'INV-20240601-003',
-           'date' => '2024-06-01',
-           'items' => 1,
-           'buyer' => 'Andi Wijaya',
-           'payment' => 'Tunai',
-           'status' => 'Gagal',
-           'total' => 50000,
-         ],
-      ];
+    @php
+        $statusColors = [
+            'pending' => '#FFE082',    // Kuning - menunggu
+            'processing' => '#FFD54F', // Kuning lebih gelap - sedang diproses
+            'shipped' => '#81D4FA',    // Biru muda - dikirim
+            'delivered' => '#4FC3F7',  // Biru - diterima
+            'completed' => '#C8E6C9',  // Hijau - selesai
+            'cancelled' => '#EF9A9A',  // Merah muda - dibatalkan
+            'failed' => '#E57373',     // Merah - gagal
+        ];
 
-      $statusColors = [
-         'Diproses' => '#FFE082',
-         'Selesai' => '#C8E6C9',
-         'Gagal' => '#EF9A9A',
-      ];
+        $statusIcons = [
+            'pending' => '🕒',     // menunggu
+            'processing' => '👨‍🍳', // diproses
+            'shipped' => '🚚',     // dikirim
+            'delivered' => '📦',   // diterima
+            'completed' => '✔️',   // selesai
+            'cancelled' => '❌',   // dibatalkan
+            'failed' => '⚠️',     // gagal
+        ];
 
-      $statusIcons = [
-         'Selesai' => '✔️',
-         'Diproses' => '🕒',
-         'Gagal' => '❌',
-      ];
      @endphp
 
       @foreach($histories as $history)
         <div class="history-card">
           <div class="history-header">
-            <div>
-               <div class="history-order-number">{{ $history['order_number'] }}</div>
+            <div d>
+               <div class="history-order-number">{{ $history['invoice'] }}</div>
                <div class="history-date">{{ date('d M Y', strtotime($history['date'])) }}</div>
                <div class="history-info">Jumlah Item: <b>{{ $history['items'] }}</b></div>
-               <div class="history-info">Pembeli: <b>{{ $history['buyer'] }}</b></div>
                <div class="history-info" style="margin-bottom:0;">Metode: <b>{{ $history['payment'] }}</b></div>
             </div>
 
@@ -86,7 +64,7 @@
                  {{ $history['status'] }}
                </div>
 
-               <button class="detail-btn" onclick="openPopup('{{ $history['order_number'] }}')">Detail</button>
+               <button class="detail-btn" id="detailButton" data-id='{{ $history['id'] }}'>Detail</button>
             </div>
           </div>
 
@@ -97,23 +75,23 @@
           </div>
         </div>
 
-        {{-- Popup --}}
-        @include('components.popup-transaction', ['history' => $history])
-
      @endforeach
    </div>
 
-   <script>
-      function openPopup(orderNumber) {
-         document.getElementById('popupTransaction-' + orderNumber).style.display = 'block';
-         document.getElementById('popupOverlay-' + orderNumber).style.display = 'block';
-      }
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.detail-btn').forEach(function(button) {
+            button.addEventListener('click', function () {
+                const orderId = button.getAttribute('data-id');
+                if (orderId) {
+                    window.location.href = `/order/${orderId}`;
+                }
+            });
+        });
+    });
+    </script>
 
-      function closePopup(orderNumber) {
-         document.getElementById('popupTransaction-' + orderNumber).style.display = 'none';
-         document.getElementById('popupOverlay-' + orderNumber).style.display = 'none';
-      }
-   </script>
+
 
    <script src="{{ asset('js/header.js') }}" defer></script>
 </body>
