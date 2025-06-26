@@ -111,7 +111,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 // Customer routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{id}/status', [OrderController::class, 'getStatus'])->name('orders.get-status');
 });
+

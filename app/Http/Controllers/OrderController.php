@@ -15,15 +15,19 @@ class OrderController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        
         $histories = Order::with(['menus', 'user'])
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($order) {
                 return [
                     'id' => $order->id,
                     'invoice' => $order->invoice,
-                    'date' => $order->created_at->format('Y-m-d'), // for display
+                    'date' => $order->created_at->format('Y-m-d'),
                     'items' => $order->menus->sum('pivot.quantity'),
-                    'buyer' => $order->user->name,
+                    'buyer' => $order->user->name ?? $order->user->username,
                     'payment' => $order->payment_method,
                     'status' => $order->status,
                     'total' => $order->subtotal + $order->shipping_fee + $order->admin_fee,
@@ -62,7 +66,6 @@ class OrderController extends Controller
             return $item->menu->price * $item->quantity;
         });
 
-
         $invoice_number = 'JD-' . now()->format('YmdHis') . '-' . $user->id . '-' . Str::upper(Str::random(4));
 
         DB::beginTransaction();
@@ -91,7 +94,6 @@ class OrderController extends Controller
 
             DB::commit();
 
-
             return response()->json([
                 'message' => 'Pesanan berhasil dibuat.',
                 'order_id' => $order->id
@@ -119,5 +121,28 @@ class OrderController extends Controller
             ->firstOrFail();
 
         return view('order', compact('order'));
+    }
+
+    // Method untuk mendapatkan status terbaru order
+    public function getStatus($id)
+    {
+        try {
+            $user = Auth::user();
+            
+            $order = Order::where('id', $id)
+                ->where('user_id', $user->id)
+                ->firstOrFail();
+
+            return response()->json([
+                'success' => true,
+                'status' => $order->status,
+                'updated_at' => $order->updated_at->format('Y-m-d H:i:s')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak ditemukan'
+            ], 404);
+        }
     }
 }

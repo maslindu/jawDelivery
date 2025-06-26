@@ -31,5 +31,80 @@ class AdminOrderController extends Controller
         return view('admin.orders', compact('orders', 'statusCounts'));
     }
 
-    // ... rest of the methods remain the same
+    // Method untuk update status order
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:pending,processing,shipped,delivered,cancelled'
+            ]);
+
+            $order = Order::findOrFail($id);
+            $oldStatus = $order->status;
+            $newStatus = $request->status;
+
+            // Update status order
+            $order->update(['status' => $newStatus]);
+
+            // Get updated status counts
+            $statusCounts = [
+                'pending' => Order::where('status', 'pending')->count(),
+                'processing' => Order::where('status', 'processing')->count(),
+                'shipped' => Order::where('status', 'shipped')->count(),
+                'delivered' => Order::where('status', 'delivered')->count(),
+                'cancelled' => Order::where('status', 'cancelled')->count(),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status pesanan berhasil diperbarui',
+                'order' => [
+                    'id' => $order->id,
+                    'status' => $order->status,
+                    'invoice' => $order->invoice
+                ],
+                'statusCounts' => $statusCounts,
+                'oldStatus' => $oldStatus,
+                'newStatus' => $newStatus
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Method untuk mendapatkan status counts
+    public function getStatusCounts()
+    {
+        $statusCounts = [
+            'pending' => Order::where('status', 'pending')->count(),
+            'processing' => Order::where('status', 'processing')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
+            'delivered' => Order::where('status', 'delivered')->count(),
+            'cancelled' => Order::where('status', 'cancelled')->count(),
+        ];
+
+        return response()->json($statusCounts);
+    }
+
+    // Method untuk mendapatkan detail order
+    public function show($id)
+    {
+        try {
+            $order = Order::with(['user', 'menus', 'address'])->findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'order' => $order
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak ditemukan'
+            ], 404);
+        }
+    }
 }
