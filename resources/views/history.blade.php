@@ -50,7 +50,6 @@
             ];
         @endphp
 
-        @endphp
 
         @foreach ($histories as $history)
             <div class="history-card" data-order-id="{{ $history['id'] }}">

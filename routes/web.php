@@ -57,6 +57,19 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/manage-driver', function () { return view('admin.manage-driver'); })->name('admin.manage-driver');
     Route::get('/manage-users', function () { return view('admin.manage-users'); })->name('admin.manage-users');
     Route::get('/financial-reports', function () { return view('admin.financial-reports'); })->name('admin.financial-reports');
+
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+    Route::post('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders-detail/{id}', [AdminOrderController::class, 'detail'])->name('admin.orders.detail'); // Route baru
+    Route::get('/orders/status-counts', [AdminOrderController::class, 'getStatusCounts'])->name('admin.orders.status-counts');
+    Route::get('/orders/{id}/status', [AdminOrderController::class, 'getOrderStatus'])->name('admin.orders.get-status');
+
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+    Route::post('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders-detail/{id}', [AdminOrderController::class, 'detail'])->name('admin.orders.detail'); // Route baru
+    Route::get('/orders/status-counts', [AdminOrderController::class, 'getStatusCounts'])->name('admin.orders.status-counts');
 });
 
 Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {

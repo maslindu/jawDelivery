@@ -31,6 +31,18 @@ class AdminOrderController extends Controller
         return view('admin.orders', compact('orders', 'statusCounts'));
     }
 
+    // Method baru untuk halaman detail order
+    public function detail($id)
+    {
+        try {
+            $order = Order::with(['user', 'menus', 'address'])->findOrFail($id);
+            
+            return view('admin.orders-detail', compact('order'));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.orders')->with('error', 'Pesanan tidak ditemukan');
+        }
+    }
+
     // Method untuk update status order
     public function updateStatus(Request $request, $id)
     {
