@@ -39,7 +39,7 @@ Route::middleware(['role:admin|pelanggan'])->group(function () {
 Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'admin'])->name('admin.dashboard');
     Route::get('/orders', function () { return view('admin.orders'); })->name('admin.orders');
-    
+
     // Menu Management Routes
     Route::get('/manage-menu', [MenuController::class, 'adminIndex'])->name('admin.manage-menu');
     Route::get('/menu/create', [MenuController::class, 'create'])->name('admin.menu.create');
@@ -47,13 +47,13 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/menu/{id}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
     Route::put('/menu/{id}', [MenuController::class, 'update'])->name('admin.menu.update');
     Route::delete('/menu/{id}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
-    
+
     // Category Management Routes
     Route::get('/add-category', [CategoryController::class, 'create'])->name('admin.category.create');
     Route::post('/category', [CategoryController::class, 'store'])->name('admin.category.store');
     Route::put('/category/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
     Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
-    
+
     Route::get('/manage-driver', function () { return view('admin.manage-driver'); })->name('admin.manage-driver');
     Route::get('/manage-users', function () { return view('admin.manage-users'); })->name('admin.manage-users');
     Route::get('/financial-reports', function () { return view('admin.financial-reports'); })->name('admin.financial-reports');
@@ -71,7 +71,7 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/orders-detail/{id}', [AdminOrderController::class, 'detail'])->name('admin.orders.detail'); // Route baru
     Route::get('/orders/status-counts', [AdminOrderController::class, 'getStatusCounts'])->name('admin.orders.status-counts');
 
-    
+
 });
 
 Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
@@ -102,9 +102,14 @@ Route::middleware(['pelanggan_or_guest'])->group(function () {
 Route::patch('/cart/{id}/quantity', [CartController::class, 'updateQuantity'])->middleware('role:pelanggan');
 Route::delete('/cart/{id}', [CartController::class, 'destroy'])->middleware('role:pelanggan');
 
-Route::get('/favorite-menu', function () {
-    return view('favorite-menu');
-})->name('user.favorite');
+
+
+Route::middleware(['auth', 'role:pelanggan'])->prefix('favorites')->name('favorite.')->group(function () {
+    Route::get('/', [FavoriteController::class, 'index'])->name('index');
+    Route::post('/', [FavoriteController::class, 'store'])->name('store');
+    Route::delete('/', [FavoriteController::class, 'destroy'])->name('destroy');
+});
+
 
 
 Route::get('/admin/orders-detail/{code?}', function ($code = null) {

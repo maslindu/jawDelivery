@@ -98,12 +98,18 @@
                 <div class="card">
                     <h3 class="card-title">Transaksi Terbaru</h3>
                     <div class="address-content">
-                        <div class="transaction-info">
-                            <div class="transaction-date">{{ $firstOrder['date'] }}</div>
-                            <div class="transaction-total">Total Pembayaran : Rp.
-                            {{ number_format($firstOrder['total'], 0, ',', '.') }}
-                        </div>
-                        </div>
+                        @if ($firstOrder)
+                            <div class="transaction-info">
+                                <div class="transaction-date">{{ $firstOrder['date'] }}</div>
+                                <div class="transaction-total">
+                                    Total Pembayaran : Rp. {{ number_format($firstOrder['total'], 0, ',', '.') }}
+                                </div>
+                            </div>
+                        @else
+                            <div class="transaction-info">
+                                Tidak ada transaksi
+                            </div>
+                        @endif
                         <a href="{{ route('user.history') }}" class="action-link" style="margin-bottom:12px">Lihat Seluruh
                         Transaksi</a>
                     </div>

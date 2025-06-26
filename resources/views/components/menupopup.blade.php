@@ -21,6 +21,9 @@
                 </div>
             </div>
 
+            @php
+                $isGuest = !auth()->check();
+            @endphp
             <!-- Bottom Section -->
             <div class="popup-bottom-section">
                 <div class="popup-quantity-controls">
@@ -34,11 +37,21 @@
                             <span>+</span>
                         </button>
                     </div>
+                    @if (!$isGuest)
+                        <form method="POST" action="{{ route('favorite.store') }}" style="margin-left: auto;">
+                            @csrf
+                            <input type="hidden" id="popupMenuId" name="menu_id" value="">
+                            <button id="favoriteToggleBtn" class="favorite-btn" onclick="toggleFavorite()">
+                                <svg id='heartIcon' xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fe4a49" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3.172 5.172a4.5 4.5 0 0 1 6.364 0L12 7.636l2.464-2.464a4.5 4.5 0 1 1 6.364 6.364L12 21 3.172 11.536a4.5 4.5 0 0 1 0-6.364z" />
+                                </svg>
+                            </button>
+
+                        </form>
+                    @endif
                 </div>
 
-                @php
-                    $isGuest = !auth()->check();
-                @endphp
 
                 <div style="text-align: center; margin-top: 1rem;">
                     <button id="addToCartBtn"
