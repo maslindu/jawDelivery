@@ -10,6 +10,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Admin\AdminOrderController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -92,4 +94,24 @@ Route::get('/favorite-menu', function () {
 
 Route::get('/admin/orders-detail/{code?}', function ($code = null) {
     return view('admin.orders-detail', ['code' => $code]);
+});
+
+// Route untuk update status order
+Route::patch('/admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+    Route::post('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders/status-counts', [AdminOrderController::class, 'getStatusCounts'])->name('admin.orders.status-counts');
+    Route::get('/orders/{id}/status', [AdminOrderController::class, 'getOrderStatus'])->name('admin.orders.get-status');
+});
+
+// Customer routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{id}/status', [OrderController::class, 'getStatus'])->name('orders.get-status');
 });
