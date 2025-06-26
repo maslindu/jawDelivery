@@ -66,10 +66,12 @@
                             </div>
                             <div class="order-customer-info">
                                 <span class="order-customer-name">
-                                    {{ $order->buyer_name }}
+                                    {{-- Perbaikan: menggunakan relasi user yang benar --}}
+                                    {{ $order->user->name ?? $order->user->username ?? 'N/A' }}
                                 </span>
                                 <span class="order-customer-address">
-                                    {{ $order->buyer_address }}
+                                    {{-- Perbaikan: menggunakan relasi address yang benar --}}
+                                    {{ $order->address->address ?? 'Alamat tidak tersedia' }}
                                 </span>
                                 @if ($order->user && $order->user->phone)
                                     <span class="order-customer-phone">
@@ -86,9 +88,10 @@
                                         <div class="menu-photo-item"
                                             style="z-index: {{ 10 - $index }};
                                  transform: translateX({{ $index * 18 }}px) translateY({{ $index * 12 }}px);">
-                                            <img src="{{ $menu->image ? asset('storage/' . $menu->image) : '/placeholder.svg?height=70&width=70' }}"
+                                            {{-- Perbaikan: menggunakan image_url seperti pada order.blade.php --}}
+                                            <img src="{{ $menu->image_url }}"
                                                 alt="{{ $menu->name }}" class="menu-photo-image"
-                                                onerror="this.src='/placeholder.svg?height=70&width=70'">
+                                                onerror="this.src='{{ asset('storage/menu/default-image.jpg') }}'">
                                         </div>
                                     @endforeach
                                     @if ($order->menus->count() > 3)
@@ -96,7 +99,7 @@
                                     @endif
                                 @else
                                     <div class="menu-photo-item">
-                                        <img src="/placeholder.svg?height=70&width=70" alt="No menu"
+                                        <img src="{{ asset('storage/menu/default-image.jpg') }}" alt="No menu"
                                             class="menu-photo-image">
                                     </div>
                                 @endif
@@ -123,7 +126,8 @@
                         <div class="order-item-footer">
                             <div class="order-total">
                                 Total: <span class="order-total-amount">Rp
-                                    {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                                    {{-- Perbaikan: menggunakan perhitungan yang benar --}}
+                                    {{ number_format(($order->subtotal ?? 0) + ($order->shipping_fee ?? 0) + ($order->admin_fee ?? 0), 0, ',', '.') }}</span>
                             </div>
                             <div class="order-payment-method">{{ ucfirst($order->payment_method ?? 'N/A') }}</div>
                         </div>
@@ -177,242 +181,16 @@
     <!-- Notification Container -->
     <div id="notificationContainer" class="notification-container"></div>
 
-<script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    let originalStatusCounts = {
-        pending: {{ $statusCounts['pending'] }},
-        processing: {{ $statusCounts['processing'] }},
-        shipped: {{ $statusCounts['shipped'] }},
-        delivered: {{ $statusCounts['delivered'] }},
-        cancelled: {{ $statusCounts['cancelled'] }}
-    };
-
-    // TAMBAHAN: Event listener untuk klik card pesanan
-    document.addEventListener('DOMContentLoaded', function() {
-        // Tambahkan event listener untuk setiap card pesanan
-        document.querySelectorAll('.order-item-card').forEach(card => {
-            card.addEventListener('click', function(event) {
-                // Jangan redirect jika yang diklik adalah dropdown status
-                if (event.target.closest('.order-status-container')) {
-                    return;
-                }
-                
-                const orderId = this.getAttribute('data-order-id');
-                if (orderId) {
-                    window.location.href = `/admin/orders-detail/${orderId}`;
-                }
-            });
-        });
-    });
-
-    // Toggle dropdown status
-    function toggleOrderStatusDropdown(button) {
-        // Tutup semua dropdown lain
-        document.querySelectorAll('.order-status-dropdown').forEach(dropdown => {
-            if (dropdown !== button.nextElementSibling) {
-                dropdown.style.display = 'none';
-            }
-        });
-
-        const dropdown = button.nextElementSibling;
-        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // Select status dari dropdown
-    function selectOrderStatus(optionButton, statusText) {
-        const dropdown = optionButton.closest('.order-status-dropdown');
-        const statusButton = dropdown.previousElementSibling;
-        const orderId = statusButton.getAttribute('data-order-id');
-        const newStatus = optionButton.getAttribute('data-status');
-        const currentStatus = statusButton.getAttribute('data-current-status');
-
-        // Jika status sama, tutup dropdown saja
-        if (newStatus === currentStatus) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
-        // Tampilkan loading
-        showLoading();
-
-        // Update status via AJAX
-        updateOrderStatus(orderId, newStatus, statusButton, dropdown);
-    }
-
-    // Function untuk update status order
-    function updateOrderStatus(orderId, newStatus, statusButton, dropdown) {
-        fetch(`/admin/orders/${orderId}/status`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    status: newStatus
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideLoading();
-
-                if (data.success) {
-                    // Update button appearance
-                    updateStatusButton(statusButton, newStatus);
-
-                    // Update dropdown active state
-                    updateDropdownActiveState(dropdown, newStatus);
-
-                    // Update status counts
-                    if (data.statusCounts) {
-                        updateStatusCounts(data.statusCounts);
-                    }
-
-                    // Update card data attribute
-                    const card = statusButton.closest('.order-item-card');
-                    if (card) {
-                        card.setAttribute('data-current-status', newStatus);
-                    }
-
-                    // Tutup dropdown
-                    dropdown.style.display = 'none';
-
-                    // Tampilkan notifikasi sukses
-                    showNotification('Status pesanan berhasil diperbarui!', 'success');
-
-                } else {
-                    showNotification(data.message || 'Gagal memperbarui status', 'error');
-                }
-            })
-            .catch(error => {
-                hideLoading();
-                console.error('Error:', error);
-                showNotification('Terjadi kesalahan saat memperbarui status', 'error');
-            });
-    }
-
-    // Update tampilan button status
-    function updateStatusButton(button, newStatus) {
-        // Remove all status classes
-        button.classList.remove('status-pending', 'status-processing', 'status-shipped', 'status-delivered',
-            'status-cancelled');
-
-        // Add new status class
-        button.classList.add(`status-${newStatus}`);
-
-        // Update button text
-        const statusLabels = {
-            'pending': 'Menunggu',
-            'processing': 'Diproses',
-            'shipped': 'Dikirim',
-            'delivered': 'Selesai',
-            'cancelled': 'Dibatalkan'
+    <!-- Pass data to JavaScript -->
+    <script>
+        window.statusCounts = {
+            pending: {{ $statusCounts['pending'] }},
+            processing: {{ $statusCounts['processing'] }},
+            shipped: {{ $statusCounts['shipped'] }},
+            delivered: {{ $statusCounts['delivered'] }},
+            cancelled: {{ $statusCounts['cancelled'] }}
         };
-
-        button.textContent = statusLabels[newStatus] || newStatus;
-        button.setAttribute('data-current-status', newStatus);
-    }
-
-    // Update active state di dropdown
-    function updateDropdownActiveState(dropdown, newStatus) {
-        dropdown.querySelectorAll('.order-status-option').forEach(option => {
-            option.classList.remove('active');
-            if (option.getAttribute('data-status') === newStatus) {
-                option.classList.add('active');
-            }
-        });
-    }
-
-    // Update status counts di header
-    function updateStatusCounts(newCounts) {
-        Object.keys(newCounts).forEach(status => {
-            const countElement = document.getElementById(`count-${status}`);
-            if (countElement) {
-                countElement.textContent = newCounts[status];
-
-                // Add animation effect
-                countElement.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    countElement.style.transform = 'scale(1)';
-                }, 200);
-            }
-        });
-    }
-
-    // Show loading overlay
-    function showLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.style.display = 'flex';
-        }
-    }
-
-    // Hide loading overlay
-    function hideLoading() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.style.display = 'none';
-        }
-    }
-
-    // Show notification
-    function showNotification(message, type = 'info') {
-        const container = document.getElementById('notificationContainer');
-        if (!container) return;
-
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" style="margin-left: 10px; background: none; border: none; color: inherit; cursor: pointer;">&times;</button>
-    `;
-
-        container.appendChild(notification);
-
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 5000);
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('.order-status-container')) {
-            document.querySelectorAll('.order-status-dropdown').forEach(dropdown => {
-                dropdown.style.display = 'none';
-            });
-        }
-    });
-
-    // Prevent card click when interacting with status dropdown
-    document.querySelectorAll('.order-status-container').forEach(container => {
-        container.addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-    // Tambahkan event listener untuk setiap card pesanan
-    document.querySelectorAll('.order-item-card').forEach(card => {
-        card.addEventListener('click', function(event) {
-            // Jangan redirect jika yang diklik adalah dropdown status
-            if (event.target.closest('.order-status-container')) {
-                return;
-            }
-            
-            const orderId = this.getAttribute('data-order-id');
-            if (orderId) {
-                window.location.href = `/admin/orders-detail/${orderId}`;
-            }
-        });
-    });
-});
-</script>
-
-    
+    </script>
 
     <!-- Additional CSS -->
     <style>
@@ -436,9 +214,25 @@
             border-color: #ef4444;
             color: #991b1b;
         }
+
+        .order-item-card.clickable-card {
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .order-item-card.clickable-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-status-container {
+            cursor: default;
+        }
     </style>
 
+    <!-- Load external JavaScript files -->
     <script src="{{ asset('js/header.js') }}" defer></script>
+    <script src="{{ asset('js/admin-orders.js') }}" defer></script>
 </body>
 
 </html>

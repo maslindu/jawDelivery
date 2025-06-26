@@ -22,7 +22,7 @@
 
         <!-- Back Button -->
         <div class="back-button-container">
-            <button onclick="window.history.back()" class="back-button">
+            <button class="back-button">
                 <span class="back-icon">←</span>
                 <span>Kembali ke Daftar Pesanan</span>
             </button>
@@ -189,27 +189,27 @@
                     <div class="status-actions">
                         <div class="status-buttons">
                             <button class="status-btn {{ $order->status == 'pending' ? 'active' : '' }}" 
-                                    data-status="pending" onclick="updateOrderStatus('pending')">
+                                    data-status="pending">
                                 <div class="btn-icon">⏳</div>
                                 <div class="btn-text">Menunggu</div>
                             </button>
                             <button class="status-btn {{ $order->status == 'processing' ? 'active' : '' }}" 
-                                    data-status="processing" onclick="updateOrderStatus('processing')">
+                                    data-status="processing">
                                 <div class="btn-icon">🔄</div>
                                 <div class="btn-text">Diproses</div>
                             </button>
                             <button class="status-btn {{ $order->status == 'shipped' ? 'active' : '' }}" 
-                                    data-status="shipped" onclick="updateOrderStatus('shipped')">
+                                    data-status="shipped">
                                 <div class="btn-icon">🚚</div>
                                 <div class="btn-text">Dikirim</div>
                             </button>
                             <button class="status-btn {{ $order->status == 'delivered' ? 'active' : '' }}" 
-                                    data-status="delivered" onclick="updateOrderStatus('delivered')">
+                                    data-status="delivered">
                                 <div class="btn-icon">✅</div>
                                 <div class="btn-text">Selesai</div>
                             </button>
                             <button class="status-btn {{ $order->status == 'cancelled' ? 'active' : '' }}" 
-                                    data-status="cancelled" onclick="updateOrderStatus('cancelled')">
+                                    data-status="cancelled">
                                 <div class="btn-icon">❌</div>
                                 <div class="btn-text">Dibatalkan</div>
                             </button>
@@ -255,131 +255,17 @@
     <!-- Notification Container -->
     <div id="notification" class="notification"></div>
 
+    <!-- Pass order data to JavaScript -->
     <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const orderId = {{ $order->id }};
-        let currentStatus = '{{ $order->status }}';
-
-        function updateOrderStatus(newStatus) {
-            if (newStatus === currentStatus) {
-                return;
-            }
-
-            // Show loading state
-            const buttons = document.querySelectorAll('.status-btn');
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-            });
-
-            fetch(`/admin/orders/${orderId}/status`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    status: newStatus
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update current status
-                    currentStatus = newStatus;
-                    
-                    // Update button states
-                    updateButtonStates(newStatus);
-                    
-                    // Update status display
-                    updateStatusDisplay(newStatus);
-                    
-                    // Update progress steps
-                    updateProgressSteps(newStatus);
-                    
-                    // Show success notification
-                    showNotification('Status pesanan berhasil diperbarui!', 'success');
-                } else {
-                    showNotification(data.message || 'Gagal memperbarui status', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Terjadi kesalahan saat memperbarui status', 'error');
-            })
-            .finally(() => {
-                // Re-enable buttons
-                buttons.forEach(btn => {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                });
-            });
-        }
-
-        function updateButtonStates(activeStatus) {
-            const buttons = document.querySelectorAll('.status-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-status') === activeStatus) {
-                    btn.classList.add('active');
-                }
-            });
-        }
-
-        function updateStatusDisplay(status) {
-            const statusIcon = document.querySelector('.status-icon-large');
-            const statusTitle = document.querySelector('.status-title');
-            const statusTime = document.querySelector('.status-time');
-
-            const statusConfig = {
-                'pending': { icon: '⏳', title: 'Menunggu Konfirmasi' },
-                'processing': { icon: '🔄', title: 'Sedang Diproses' },
-                'shipped': { icon: '🚚', title: 'Sedang Dikirim' },
-                'delivered': { icon: '✅', title: 'Pesanan Selesai' },
-                'cancelled': { icon: '❌', title: 'Pesanan Dibatalkan' }
-            };
-
-            if (statusConfig[status]) {
-                statusIcon.textContent = statusConfig[status].icon;
-                statusTitle.textContent = statusConfig[status].title;
-                statusTime.textContent = 'Diperbarui: ' + new Date().toLocaleString('id-ID');
-            }
-        }
-
-        function updateProgressSteps(status) {
-            const steps = document.querySelectorAll('.progress-step');
-            const statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
-            const currentIndex = statusOrder.indexOf(status);
-
-            steps.forEach((step, index) => {
-                step.classList.remove('active', 'completed');
-                
-                if (status === 'cancelled') {
-                    // If cancelled, don't show any progress
-                    return;
-                }
-                
-                if (index < currentIndex) {
-                    step.classList.add('completed');
-                } else if (index === currentIndex) {
-                    step.classList.add('active');
-                }
-            });
-        }
-
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type} show`;
-
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+        window.orderData = {
+            id: {{ $order->id }},
+            status: '{{ $order->status }}'
+        };
     </script>
 
+    <!-- Load external JavaScript files -->
     <script src="{{ asset('js/header.js') }}" defer></script>
+    <script src="{{ asset('js/admin-orders-detail.js') }}" defer></script>
 </body>
 
 </html>
