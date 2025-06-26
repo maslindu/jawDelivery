@@ -20,84 +20,102 @@
             </div>
         @endif
 
+        <!-- Back Button -->
+        <div class="back-button-container">
+            <button onclick="window.history.back()" class="back-button">
+                <span class="back-icon">←</span>
+                <span>Kembali ke Daftar Pesanan</span>
+            </button>
+        </div>
+
         <div class="details-container">
             <!-- Order Section -->
             <div class="order-section">
-                <h2 class="section-title">📋 Detail Pesanan</h2>
-                
-                <div class="order-header">
-                    <h3 style="text-align: center; margin-bottom: 0.5rem;">{{ $order->invoice ?? 'N/A' }}</h3>
-                    <div class="order-meta">
-                        <span class="order-date">{{ $order->created_at->format('d F Y, H:i') }}</span>
+                <div class="section-card">
+                    <h2 class="section-title">📋 Detail Pesanan</h2>
+                    
+                    <div class="order-header">
+                        <div class="invoice-container">
+                            <h3 class="invoice-number">{{ $order->invoice ?? 'N/A' }}</h3>
+                            <div class="order-meta">
+                                <span class="order-date">{{ $order->created_at->format('d F Y, H:i') }}</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="order-items">
-                    @if ($order->menus && $order->menus->count() > 0)
-                        @foreach ($order->menus as $menu)
-                            <div class="order-item">
-                                <div class="item-image">
-                                    <img src="{{ $menu->image_url }}" 
-                                         alt="{{ $menu->name }}" 
-                                         style="width: 80px; height: 60px; object-fit: cover; border-radius: 8px;"
-                                         onerror="this.src='{{ asset('storage/menu/default-image.jpg') }}'">
+                    <div class="order-items">
+                        @if ($order->menus && $order->menus->count() > 0)
+                            @foreach ($order->menus as $menu)
+                                <div class="order-item">
+                                    <div class="item-image">
+                                        <img src="{{ $menu->image_url }}" 
+                                             alt="{{ $menu->name }}" 
+                                             class="menu-image"
+                                             onerror="this.src='{{ asset('storage/menu/default-image.jpg') }}'">
+                                    </div>
+                                    <div class="item-details">
+                                        <div class="item-name">{{ $menu->name }}</div>
+                                        <div class="item-description">{{ $menu->description ?? 'Tidak ada deskripsi' }}</div>
+                                        <div class="item-price-info">
+                                            <span class="unit-price">Rp {{ number_format($menu->price, 0, ',', '.') }} × {{ $menu->pivot->quantity }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-quantity">
+                                        <span class="quantity-badge">{{ $menu->pivot->quantity }}</span>
+                                    </div>
+                                    <div class="item-total">
+                                        <span class="subtotal">Rp {{ number_format($menu->price * $menu->pivot->quantity, 0, ',', '.') }}</span>
+                                    </div>
                                 </div>
-                                <div class="item-details">
-                                    <div class="item-name">{{ $menu->name }}</div>
-                                    <div class="item-description">{{ $menu->description ?? 'Tidak ada deskripsi' }}</div>
-                                </div>
-                                <div class="item-quantity">
-                                    <span class="quantity-badge">x{{ $menu->pivot->quantity }}</span>
-                                </div>
-                                <div class="item-price">
-                                    <span class="price">Rp {{ number_format($menu->price, 0, ',', '.') }}</span>
-                                    <span class="subtotal">Rp {{ number_format($menu->price * $menu->pivot->quantity, 0, ',', '.') }}</span>
-                                </div>
+                            @endforeach
+                        @else
+                            <div class="empty-items">
+                                <div class="empty-icon">🍽️</div>
+                                <div class="empty-text">Tidak ada menu dalam pesanan ini</div>
                             </div>
-                        @endforeach
-                    @else
-                        <div class="order-item">
-                            <div class="item-details">
-                                <div class="item-name">Tidak ada menu</div>
-                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal:</span>
+                            <span class="summary-value">Rp {{ number_format($order->subtotal ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Ongkos Kirim:</span>
+                            <span class="summary-value">Rp {{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Biaya Admin:</span>
+                            <span class="summary-value">Rp {{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="summary-row payment-method-row">
+                            <span class="summary-label">Metode Pembayaran:</span>
+                            <span class="payment-method">{{ ucfirst($order->payment_method ?? 'N/A') }}</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Total Pembayaran:</span>
+                            <span class="total-amount">Rp {{ number_format(($order->subtotal ?? 0) + ($order->shipping_fee ?? 0) + ($order->admin_fee ?? 0), 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+
+                    @if ($order->notes)
+                        <div class="order-notes">
+                            <div class="notes-title">📝 Catatan Pesanan</div>
+                            <div class="notes-content">{{ $order->notes }}</div>
                         </div>
                     @endif
                 </div>
-
-                <div class="order-total">
-                    <div class="total-row">
-                        <span class="total-label">Subtotal:</span>
-                        <span>Rp {{ number_format($order->subtotal ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="total-row">
-                        <span class="total-label">Ongkir:</span>
-                        <span>Rp {{ number_format($order->shipping_fee ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="total-row">
-                        <span class="total-label">Biaya Admin:</span>
-                        <span>Rp {{ number_format($order->admin_fee ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="total-row" style="border-top: 2px solid #e9ecef; padding-top: 0.5rem; margin-top: 0.5rem;">
-                        <span class="total-label">Total:</span>
-                        <span class="total-amount">Rp {{ number_format(($order->subtotal ?? 0) + ($order->shipping_fee ?? 0) + ($order->admin_fee ?? 0), 0, ',', '.') }}</span>
-                    </div>
-                </div>
-
-                @if ($order->notes)
-                    <div class="order-notes">
-                        <div class="notes-title">📝 Catatan Pesanan</div>
-                        <div class="notes-content">{{ $order->notes }}</div>
-                    </div>
-                @endif
             </div>
 
-            <!-- Status Section -->
-            <div class="status-section">
-                <h2 class="section-title">📊 Status Pesanan</h2>
-                
-                <div class="status-container">
-                    <div class="current-status">
-                        <div class="status-icon">
+            <!-- Status & Customer Section -->
+            <div class="sidebar-section">
+                <!-- Current Status Display -->
+                <div class="section-card status-display-card">
+                    <h3 class="section-subtitle">📊 Status Saat Ini</h3>
+                    <div class="current-status-display">
+                        <div class="status-icon-large">
                             @switch($order->status)
                                 @case('pending')
                                     ⏳
@@ -144,6 +162,7 @@
                         </div>
                     </div>
 
+                    <!-- Progress Steps -->
                     <div class="status-progress">
                         <div class="progress-step {{ $order->status == 'pending' ? 'active' : ($order->status != 'cancelled' && in_array($order->status, ['processing', 'shipped', 'delivered']) ? 'completed' : '') }}">
                             <div class="step-icon">⏳</div>
@@ -162,9 +181,12 @@
                             <div class="step-label">Selesai</div>
                         </div>
                     </div>
+                </div>
 
+                <!-- Status Actions -->
+                <div class="section-card status-actions-card">
+                    <h3 class="section-subtitle">🔄 Ubah Status Pesanan</h3>
                     <div class="status-actions">
-                        <div class="actions-title">Ubah Status Pesanan</div>
                         <div class="status-buttons">
                             <button class="status-btn {{ $order->status == 'pending' ? 'active' : '' }}" 
                                     data-status="pending" onclick="updateOrderStatus('pending')">
@@ -194,22 +216,36 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Address Section -->
-        <div class="address-section">
-            <h2 class="section-title">📍 Alamat Pengiriman</h2>
-            <div class="address-content">
-                <div class="address-icon">📍</div>
-                <div class="address-details">
-                    <div class="customer-name">{{ $order->user->name ?? $order->user->username ?? 'N/A' }}</div>
-                    @if ($order->user && $order->user->phone)
-                        <div class="customer-phone">📞 {{ $order->user->phone }}</div>
-                    @endif
-                    <div class="customer-address">{{ $order->address->address ?? 'Alamat tidak tersedia' }}</div>
-                    <div style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;">
-                        <strong>Metode Pembayaran:</strong> {{ ucfirst($order->payment_method ?? 'N/A') }}
+                <!-- Customer Info -->
+                <div class="section-card customer-info-card">
+                    <h3 class="section-subtitle">👤 Informasi Pelanggan</h3>
+                    <div class="customer-info">
+                        <div class="customer-detail">
+                            <div class="detail-icon">👤</div>
+                            <div class="detail-content">
+                                <div class="detail-label">Nama</div>
+                                <div class="detail-value">{{ $order->user->name ?? $order->user->username ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                        
+                        @if ($order->user && $order->user->phone)
+                            <div class="customer-detail">
+                                <div class="detail-icon">📞</div>
+                                <div class="detail-content">
+                                    <div class="detail-label">Telepon</div>
+                                    <div class="detail-value">{{ $order->user->phone }}</div>
+                                </div>
+                            </div>
+                        @endif
+                        
+                        <div class="customer-detail">
+                            <div class="detail-icon">📍</div>
+                            <div class="detail-content">
+                                <div class="detail-label">Alamat</div>
+                                <div class="detail-value">{{ $order->address->address ?? 'Alamat tidak tersedia' }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -231,7 +267,10 @@
 
             // Show loading state
             const buttons = document.querySelectorAll('.status-btn');
-            buttons.forEach(btn => btn.disabled = true);
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
 
             fetch(`/admin/orders/${orderId}/status`, {
                 method: 'POST',
@@ -271,7 +310,10 @@
             })
             .finally(() => {
                 // Re-enable buttons
-                buttons.forEach(btn => btn.disabled = false);
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                });
             });
         }
 
@@ -286,7 +328,7 @@
         }
 
         function updateStatusDisplay(status) {
-            const statusIcon = document.querySelector('.status-icon');
+            const statusIcon = document.querySelector('.status-icon-large');
             const statusTitle = document.querySelector('.status-title');
             const statusTime = document.querySelector('.status-time');
 

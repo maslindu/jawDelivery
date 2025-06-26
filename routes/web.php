@@ -70,6 +70,8 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
     Route::get('/orders-detail/{id}', [AdminOrderController::class, 'detail'])->name('admin.orders.detail'); // Route baru
     Route::get('/orders/status-counts', [AdminOrderController::class, 'getStatusCounts'])->name('admin.orders.status-counts');
+
+    
 });
 
 Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {

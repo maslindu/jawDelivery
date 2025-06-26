@@ -393,6 +393,23 @@
             event.stopPropagation();
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Tambahkan event listener untuk setiap card pesanan
+    document.querySelectorAll('.order-item-card').forEach(card => {
+        card.addEventListener('click', function(event) {
+            // Jangan redirect jika yang diklik adalah dropdown status
+            if (event.target.closest('.order-status-container')) {
+                return;
+            }
+            
+            const orderId = this.getAttribute('data-order-id');
+            if (orderId) {
+                window.location.href = `/admin/orders-detail/${orderId}`;
+            }
+        });
+    });
+});
 </script>
 
     
