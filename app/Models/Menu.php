@@ -17,15 +17,33 @@ class Menu extends Model
         'image_link',
     ];
 
+    protected $appends = ['image_url'];
+
     public function getImageUrlAttribute()
     {
-        // return $this->avatar_link
-        //     ? Storage::url('menu/' . $this->image_link)
-        //     : Storage::url('menu/default-image.jpg');
+        if ($this->image_link && Storage::disk('public')->exists($this->image_link)) {
+            return Storage::url($this->image_link);
+        }
         return Storage::url('menu/default-image.jpg');
     }
+
+    public function getPriceFormattedAttribute()
+    {
+        return 'Rp ' . number_format($this->price, 0, ',', '.');
+    }
+
     public function categories()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class, 'category_menu');
+    }
+
+    public function getCategoryNamesAttribute()
+    {
+        return $this->categories->pluck('name')->implode(', ');
+    }
+
+    public function isInStock()
+    {
+        return $this->stock > 0;
     }
 }
