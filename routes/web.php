@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\FavoriteController;
 
 
 Route::get('/', function () {
