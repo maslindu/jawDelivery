@@ -13,6 +13,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\DriverController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,7 +56,7 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::put('/category/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
     Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
 
-    Route::get('/manage-driver', function () { return view('admin.manage-driver'); })->name('admin.manage-driver');
+    Route::get('/manage-driver', [DriverController::class, 'index'])->name('admin.manage-driver');
     Route::get('/financial-reports', function () { return view('admin.financial-reports'); })->name('admin.financial-reports');
 
     // Order Management Routes
@@ -115,9 +117,34 @@ Route::get('/admin/orders-detail/{code?}', function ($code = null) {
 // Route untuk update status order
 Route::patch('/admin/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
+    Route::post('/orders/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/orders/status-counts', [AdminOrderController::class, 'getStatusCounts'])->name('admin.orders.status-counts');
+    Route::get('/orders/{id}/status', [AdminOrderController::class, 'getOrderStatus'])->name('admin.orders.get-status');
+});
+
 // Customer routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{id}/status', [OrderController::class, 'getStatus'])->name('orders.get-status');
+});
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('drivers', DriverController::class);
+    Route::patch('drivers/{driver}/toggle-availability', [DriverController::class, 'toggleAvailability'])
+        ->name('drivers.toggle-availability');
+    Route::patch('drivers/{driver}/update-status', [DriverController::class, 'updateStatus'])
+        ->name('drivers.update-status');
+});
+
+// API routes for drivers
+Route::prefix('api')->group(function () {
+    Route::get('drivers/available', [DriverController::class, 'getAvailableDrivers'])
+        ->name('api.drivers.available');
 });
