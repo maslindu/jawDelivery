@@ -14,151 +14,108 @@ class DriverDashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        $driver = Driver::where('user_id', $user->id)->first();
-        
-        if (!$driver) {
-            return redirect('/dashboard')->with('error', 'Driver profile not found');
-        }
-
-        // Get driver statistics (menghapus rating)
-        $stats = [
-            'total_deliveries' => $driver->total_deliveries ?? 0,
-            'status' => $driver->status ?? 'inactive',
-            'is_available' => $driver->is_available ?? false
-        ];
-
-        // Get one ready order for dashboard display
-        $readyOrder = null;
         try {
-            if (Schema::hasColumn('orders', 'driver_id')) {
-                $readyOrder = Order::with(['user', 'address', 'menus'])
-                                  ->where('status', Order::STATUS_SHIPPED)
-                                  ->whereNull('driver_id')
-                                  ->orderBy('created_at', 'asc')
-                                  ->first();
+            $user = Auth::user();
+            
+            // Cek apakah user sudah login
+            if (!$user) {
+                return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
+            }
+
+            // Cari driver berdasarkan user_id
+            $driver = Driver::where('user_id', $user->id)->first();
+            
+            // Jika driver tidak ditemukan, buat default stats
+            if (!$driver) {
+                Log::warning('Driver profile not found for user', ['user_id' => $user->id]);
                 
-                Log::info('Ready order fetched for dashboard', [
-                    'order_found' => $readyOrder ? true : false,
+                $stats = [
+                    'total_deliveries' => 0,
+                    'status' => 'inactive',
+                    'is_available' => false
+                ];
+                
+                $readyOrder = null;
+                
+                return view('drivers.dashboard', compact('stats', 'readyOrder'))
+                    ->with('warning', 'Profil driver tidak ditemukan. Silakan hubungi administrator.');
+            }
+
+            // Get driver statistics
+            $stats = [
+                'total_deliveries' => $driver->total_deliveries ?? 0,
+                'status' => $driver->status ?? 'inactive',
+                'is_available' => $driver->is_available ?? false
+            ];
+
+            // Get one ready order for dashboard display
+            $readyOrder = null;
+            try {
+                if (Schema::hasColumn('orders', 'driver_id')) {
+                    $readyOrder = Order::with(['user', 'address', 'menus'])
+                                      ->where('status', Order::STATUS_SHIPPED)
+                                      ->whereNull('driver_id')
+                                      ->orderBy('created_at', 'asc')
+                                      ->first();
+                    
+                    Log::info('Ready order fetched for dashboard', [
+                        'order_found' => $readyOrder ? true : false,
+                        'user_id' => $user->id
+                    ]);
+                } else {
+                    Log::warning('Column driver_id does not exist in orders table');
+                }
+            } catch (\Exception $e) {
+                Log::error('Error fetching ready order for dashboard', [
+                    'error' => $e->getMessage(),
                     'user_id' => $user->id
                 ]);
             }
+
+            return view('drivers.dashboard', compact('driver', 'stats', 'readyOrder'));
+            
         } catch (\Exception $e) {
-            Log::error('Error fetching ready order for dashboard', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id
-            ]);
-        }
-
-        return view('drivers.dashboard', compact('driver', 'stats', 'readyOrder'));
-    }
-
-    public function profile()
-    {
-        $user = Auth::user();
-        $driver = Driver::where('user_id', $user->id)->first();
-        
-        return view('drivers.profile', compact('driver'));
-    }
-
-    public function readyOrders()
-    {
-        try {
-            // Cek apakah kolom driver_id ada
-            if (!Schema::hasColumn('orders', 'driver_id')) {
-                Log::error('Column driver_id does not exist in orders table');
-                return view('drivers.ready-orders', ['orders' => collect()]);
-            }
-
-            // Ambil pesanan dengan status "shipped" (siap diantar) yang belum diambil driver
-            $orders = Order::with(['user', 'address', 'menus'])
-                          ->where('status', Order::STATUS_SHIPPED)
-                          ->whereNull('driver_id') // Belum diambil driver
-                          ->orderBy('created_at', 'asc')
-                          ->get();
-
-            Log::info('Ready orders fetched', [
-                'count' => $orders->count(),
-                'user_id' => Auth::id()
-            ]);
-
-            return view('drivers.ready-orders', compact('orders'));
-        } catch (\Exception $e) {
-            Log::error('Error fetching ready orders', [
+            Log::error('Error in driver dashboard', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'user_id' => Auth::id()
             ]);
             
-            return view('drivers.ready-orders', ['orders' => collect()]);
+            // Return dengan default stats jika terjadi error
+            $stats = [
+                'total_deliveries' => 0,
+                'status' => 'inactive',
+                'is_available' => false
+            ];
+            
+            $readyOrder = null;
+            
+            return view('drivers.dashboard', compact('stats', 'readyOrder'))
+                ->with('error', 'Terjadi kesalahan saat memuat dashboard');
         }
     }
 
-    public function processingOrders()
+    public function profile()
     {
         try {
             $user = Auth::user();
             $driver = Driver::where('user_id', $user->id)->first();
             
             if (!$driver) {
-                return view('drivers.processing-orders', ['orders' => collect()]);
+                return redirect()->route('driver.dashboard')
+                    ->with('error', 'Profil driver tidak ditemukan');
             }
-
-            // Cek apakah kolom driver_id ada
-            if (!Schema::hasColumn('orders', 'driver_id')) {
-                Log::error('Column driver_id does not exist in orders table');
-                return view('drivers.processing-orders', ['orders' => collect()]);
-            }
-
-            // Orders yang sedang diproses oleh driver ini - status 'shipped' dengan driver_id
-            $orders = Order::with(['user', 'address', 'menus'])
-                          ->where('driver_id', $driver->id)
-                          ->where('status', Order::STATUS_SHIPPED) // Masih shipped tapi sudah ada driver_id
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-
-            return view('drivers.processing-orders', compact('orders'));
+            
+            return view('drivers.profile', compact('driver'));
+            
         } catch (\Exception $e) {
-            Log::error('Error fetching processing orders', [
+            Log::error('Error in driver profile', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id()
             ]);
             
-            return view('drivers.processing-orders', ['orders' => collect()]);
-        }
-    }
-
-    public function deliveryHistory()
-    {
-        try {
-            $user = Auth::user();
-            $driver = Driver::where('user_id', $user->id)->first();
-            
-            if (!$driver) {
-                return view('drivers.delivery-history', ['orders' => collect()]);
-            }
-
-            // Cek apakah kolom driver_id ada
-            if (!Schema::hasColumn('orders', 'driver_id')) {
-                Log::error('Column driver_id does not exist in orders table');
-                return view('drivers.delivery-history', ['orders' => collect()]);
-            }
-
-            // History pengantaran yang sudah selesai
-            $orders = Order::with(['user', 'address', 'menus'])
-                          ->where('driver_id', $driver->id)
-                          ->whereIn('status', [Order::STATUS_DELIVERED])
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
-
-            return view('drivers.delivery-history', compact('orders'));
-        } catch (\Exception $e) {
-            Log::error('Error fetching delivery history', [
-                'error' => $e->getMessage(),
-                'user_id' => Auth::id()
-            ]);
-            
-            return view('drivers.delivery-history', ['orders' => collect()]);
+            return redirect()->route('driver.dashboard')
+                ->with('error', 'Terjadi kesalahan saat memuat profil');
         }
     }
 

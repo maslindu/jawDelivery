@@ -287,6 +287,12 @@
             border: 1px solid #f5c6cb;
         }
 
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .main-content {
@@ -339,6 +345,25 @@
 
     <main class="main-content">
         <div class="driver-dashboard">
+            <!-- Alert Messages -->
+            @if(session('error'))
+                <div class="alert alert-error">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if(session('warning'))
+                <div class="alert alert-warning">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="dashboard-header">
                 <div class="driver-welcome">
                     <div class="driver-info">
@@ -346,24 +371,43 @@
                         <p>Dashboard Driver - JawDelivery</p>
                     </div>
                     <div class="driver-status">
-                        <span class="status-badge {{ $stats['status'] === 'active' ? 'status-active' : 'status-inactive' }}">
-                            {{ $stats['status'] === 'active' ? 'Aktif' : 'Tidak Aktif' }}
-                        </span>
+                        @if(isset($stats) && is_array($stats))
+                            <span class="status-badge {{ $stats['status'] === 'active' ? 'status-active' : 'status-inactive' }}">
+                                {{ $stats['status'] === 'active' ? 'Aktif' : 'Tidak Aktif' }}
+                            </span>
+                        @else
+                            <span class="status-badge status-inactive">
+                                Status Tidak Diketahui
+                            </span>
+                        @endif
                     </div>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number">{{ $stats['total_deliveries'] }}</div>
-                        <div class="stat-label">Total Pengantaran</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">
-                            {{ $stats['is_available'] ? 'Tersedia' : 'Tidak Tersedia' }}
+                @if(isset($stats) && is_array($stats))
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ $stats['total_deliveries'] ?? 0 }}</div>
+                            <div class="stat-label">Total Pengantaran</div>
                         </div>
-                        <div class="stat-label">Status Ketersediaan</div>
+                        <div class="stat-card">
+                            <div class="stat-number">
+                                {{ isset($stats['is_available']) && $stats['is_available'] ? 'Tersedia' : 'Tidak Tersedia' }}
+                            </div>
+                            <div class="stat-label">Status Ketersediaan</div>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">Total Pengantaran</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">Tidak Tersedia</div>
+                            <div class="stat-label">Status Ketersediaan</div>
+                        </div>
+                    </div>
+                @endif
             </div>
             
             <!-- Order Detail Section -->
@@ -417,7 +461,7 @@
                     </div>
                 @else
                     <div class="no-order-message">
-                        <p>🎉 Tidak ada pesanan yang siap diantar saat ini.</p>
+                        <p>📦 Tidak ada pesanan yang siap diantar saat ini.</p>
                         <p>Silakan periksa kembali nanti atau klik tombol di atas untuk melihat semua pesanan.</p>
                     </div>
                 @endif
@@ -474,7 +518,7 @@
                                 <p>Silakan menuju ke halaman "Pesanan Diproses" untuk melanjutkan pengantaran.</p>
                                 <div style="margin-top: 15px;">
                                     <a href="{{ route('driver.processing-orders') }}" class="btn-ready-orders">
-                                        🚛 Lihat Pesanan Diproses
+                                        🚚 Lihat Pesanan Diproses
                                     </a>
                                 </div>
                             </div>

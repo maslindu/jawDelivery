@@ -41,9 +41,8 @@ Route::middleware(['role:admin|pelanggan|kurir'])->group(function () {
     Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 });
 
-// ADMIN ROUTES - DIPERBAIKI DAN DIORGANISIR
+// ADMIN ROUTES
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    // Dashboard
     Route::get('/', [DashboardController::class, 'admin'])->name('dashboard');
     
     // Menu Management Routes
@@ -70,6 +69,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::delete('/drivers/{driver}', [DriverController::class, 'destroy'])->name('drivers.destroy');
     Route::patch('/drivers/{driver}/toggle-availability', [DriverController::class, 'toggleAvailability'])->name('drivers.toggle-availability');
     Route::patch('/drivers/{driver}/update-status', [DriverController::class, 'updateStatus'])->name('drivers.update-status');
+   
+   
+   Route::patch('/drivers/{driver}/update-status', [DriverController::class, 'updateStatus'])->name('drivers.update-status');
 
     // Order Management Routes
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders');
@@ -114,9 +116,10 @@ Route::prefix('user')->middleware(['auth', 'role:pelanggan'])->name('user.')->gr
     Route::get('/history', [OrderController::class, 'index'])->name('history');
 });
 
-// KURIR/DRIVER ROUTES
+// KURIR/DRIVER ROUTES - DIPERBAIKI
 Route::prefix('driver')->middleware(['auth', 'role:kurir'])->name('driver.')->group(function () {
     Route::get('/', [App\Http\Controllers\Driver\DriverDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\Driver\DriverDashboardController::class, 'index'])->name('dashboard.alt');
     Route::get('/profile', [App\Http\Controllers\Driver\DriverDashboardController::class, 'profile'])->name('profile');
     
     // Order management routes
@@ -127,6 +130,11 @@ Route::prefix('driver')->middleware(['auth', 'role:kurir'])->name('driver.')->gr
     // Actions untuk driver
     Route::post('/take-order/{orderId}', [App\Http\Controllers\Driver\DriverOrderController::class, 'takeOrder'])->name('take-order');
     Route::post('/complete-delivery/{orderId}', [App\Http\Controllers\Driver\DriverOrderController::class, 'completeDelivery'])->name('complete-delivery');
+    
+    // Status management
+    Route::patch('/toggle-availability', [App\Http\Controllers\Driver\DriverDashboardController::class, 'toggleAvailability'])->name('toggle-availability');
+    Route::patch('/update-status', [App\Http\Controllers\Driver\DriverDashboardController::class, 'updateStatus'])->name('update-status');
+    Route::get('/stats', [App\Http\Controllers\Driver\DriverDashboardController::class, 'getStats'])->name('stats');
 });
 
 // ORDER ROUTES
@@ -167,11 +175,6 @@ Route::put('/driver/update', [DriverController::class, 'updateDriver'])->name('d
 Route::prefix('api')->group(function () {
     Route::get('drivers/available', [DriverController::class, 'getAvailableDrivers'])
         ->name('api.drivers.available');
-});
-
-// Driver dashboard route (alternative)
-Route::prefix('driver')->middleware(['role:kurir'])->group(function () {
-    Route::get('/', [DashboardController::class, 'driver'])->name('driver.dashboard');
 });
 
 // Order status update route
