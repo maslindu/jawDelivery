@@ -86,6 +86,7 @@ class AuthController extends Controller
                 return redirect('/driver');
             }
 
+
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
                 'login_error' => 'An unexpected error occurred. Please try again.'
@@ -105,4 +106,3 @@ class AuthController extends Controller
     }
 
 }
-

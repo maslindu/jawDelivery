@@ -14,8 +14,11 @@ body {
 .section-title {
   font-size: 1.8rem;
   font-weight: bold;
+  padding: 8px;
   margin-bottom: 2rem;
   text-align: center;
+  display: inline-block;
+  border-bottom: 2px solid #ff4444;
 }
 
 /* Alert Styles */
