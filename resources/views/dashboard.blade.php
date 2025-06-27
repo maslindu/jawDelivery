@@ -101,9 +101,25 @@
 document.addEventListener('DOMContentLoaded', function () {
     const filterButtons = document.querySelectorAll('#category-filters .filter-btn');
     const menuItems = document.querySelectorAll('.menu-item');
+    const searchBox = document.getElementById('searchInput');
 
     const activeCategories = new Set();
 
+    function filterMenuItems() {
+        const query = searchBox?.value.toLowerCase().trim() || '';
+
+        menuItems.forEach(item => {
+            const name = item.dataset.name.toLowerCase();
+            const itemCategories = item.dataset.categories.split(',').map(c => c.trim());
+
+            const matchesSearch = name.includes(query);
+            const matchesCategory = activeCategories.size === 0 || [...activeCategories].some(cat => itemCategories.includes(cat));
+
+            item.style.display = (matchesSearch && matchesCategory) ? 'block' : 'none';
+        });
+    }
+
+    // Handle category filters
     filterButtons.forEach(button => {
         const categoryName = button.textContent.trim();
 
@@ -120,41 +136,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.querySelector('.checkmark').style.display = 'inline';
             }
 
-            if (activeCategories.size === 0) {
-                menuItems.forEach(item => item.style.display = 'block');
-            } else {
-                menuItems.forEach(item => {
-                    const itemCategories = item.dataset.categories.split(',').map(c => c.trim());
-                    const matches = [...activeCategories].some(cat => itemCategories.includes(cat));
-                    item.style.display = matches ? 'block' : 'none';
-                });
-            }
+            filterMenuItems();
         });
     });
+
+    // Handle search input
+    if (searchBox) {
+        searchBox.addEventListener('input', filterMenuItems);
+    }
 });
 </script>
 
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchBox = document.getElementById('searchInput');
-        const menuItems = document.querySelectorAll('.menu-item');
-
-        searchBox.addEventListener('input', function () {
-            const query = this.value.toLowerCase().trim();
-
-            menuItems.forEach(item => {
-                const name = item.dataset.name.toLowerCase();
-                if (name.includes(query)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
-</script>
 
 
 <script>
