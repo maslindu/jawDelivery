@@ -35,6 +35,9 @@
                             $color = $colors[$index % count($colors)];
                         @endphp
                         <button class="filter-btn filter-btn-{{ $color }}">
+                            <svg class="checkmark" style="display: none; width: 1em; height: 1em; margin-right: 6px" fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
                             {{ $category->name }}
                         </button>
                     @endforeach
@@ -94,6 +97,44 @@
 </body>
 <script src="{{ asset('js/header.js') }}" defer></script>
 <script src="{{ asset('js/menupopup.js') }}" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filterButtons = document.querySelectorAll('#category-filters .filter-btn');
+    const menuItems = document.querySelectorAll('.menu-item');
+
+    const activeCategories = new Set();
+
+    filterButtons.forEach(button => {
+        const categoryName = button.textContent.trim();
+
+        button.addEventListener('click', () => {
+            const isActive = activeCategories.has(categoryName);
+
+            if (isActive) {
+                activeCategories.delete(categoryName);
+                button.classList.remove('active-filter');
+                button.querySelector('.checkmark').style.display = 'none';
+            } else {
+                activeCategories.add(categoryName);
+                button.classList.add('active-filter');
+                button.querySelector('.checkmark').style.display = 'inline';
+            }
+
+            if (activeCategories.size === 0) {
+                menuItems.forEach(item => item.style.display = 'block');
+            } else {
+                menuItems.forEach(item => {
+                    const itemCategories = item.dataset.categories.split(',').map(c => c.trim());
+                    const matches = [...activeCategories].some(cat => itemCategories.includes(cat));
+                    item.style.display = matches ? 'block' : 'none';
+                });
+            }
+        });
+    });
+});
+</script>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

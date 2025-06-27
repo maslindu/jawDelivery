@@ -183,6 +183,8 @@ body {
 }
 
 .filter-btn {
+    display: flex;
+    align-items: center;
     white-space: nowrap;
     padding: 8px 24px;
     border: 2px solid;
