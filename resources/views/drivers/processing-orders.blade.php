@@ -8,7 +8,7 @@
     <style>
         .main-content {
             min-height: calc(100vh - 100px);
-            background-color: #f8f9fa;
+            background-color: #f8fafc;
             padding: 20px;
         }
 
@@ -20,29 +20,35 @@
         .page-header {
             background: white;
             padding: 24px;
-            border-radius: 12px;
+            border-radius: 8px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #f59e0b;
         }
 
         .page-header h1 {
             margin: 0;
-            color: #333;
-            font-size: 28px;
-            font-weight: 700;
+            color: #1e293b;
+            font-size: 24px;
+            font-weight: 600;
         }
 
         .orders-grid {
             display: grid;
-            gap: 20px;
+            gap: 16px;
         }
 
         .order-card {
             background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #f59e0b;
+            transition: all 0.2s ease;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .order-header {
@@ -58,150 +64,156 @@
         }
 
         .order-code {
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .customer-name {
             font-size: 16px;
-            color: #666;
+            font-weight: 600;
+            color: #1e293b;
             margin-bottom: 4px;
         }
 
-        .order-time {
+        .customer-name {
             font-size: 14px;
-            color: #999;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .order-time {
+            font-size: 12px;
+            color: #94a3b8;
         }
 
         .status-badge {
-            background: #ffc107;
-            color: #212529;
+            background: #f59e0b;
+            color: white;
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
-        }
-
-        .order-actions {
-            display: flex;
-            gap: 12px;
+            margin-bottom: 8px;
         }
 
         .btn-complete {
-            background: #28a745;
+            background: #059669;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s;
         }
 
         .btn-complete:hover {
-            background: #218838;
+            background: #047857;
         }
 
         .btn-complete:disabled {
-            background: #6c757d;
+            background: #94a3b8;
             cursor: not-allowed;
         }
 
         .address-section {
-            background: #f8f9fa;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
         }
 
         .address-label {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-size: 13px;
         }
 
         .address-text {
-            color: #666;
-            line-height: 1.5;
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         .order-items {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .items-label {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-size: 13px;
         }
 
         .items-list {
-            color: #666;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .items-list div {
+            padding: 2px 0;
         }
 
         .total-amount {
             text-align: right;
-            font-size: 18px;
-            font-weight: 700;
-            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .empty-state h3 {
-            color: #666;
+            color: #64748b;
             margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 500;
         }
 
         .empty-state p {
-            color: #999;
+            color: #94a3b8;
+            font-size: 14px;
         }
 
         .alert {
             padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            border-radius: 6px;
+            margin-bottom: 16px;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
         }
 
         @media (max-width: 768px) {
             .main-content {
-                padding: 10px;
+                padding: 15px;
             }
             
             .order-header {
                 flex-direction: column;
-                gap: 16px;
-            }
-            
-            .order-actions {
-                width: 100%;
-                justify-content: stretch;
+                gap: 12px;
             }
             
             .btn-complete {
-                flex: 1;
+                width: 100%;
             }
         }
     </style>
@@ -212,7 +224,7 @@
     <main class="main-content">
         <div class="orders-container">
             <div class="page-header">
-                <h1>Pesanan Sedang Diproses</h1>
+                <h1>🚛 Pesanan Sedang Diantar</h1>
             </div>
 
             <div id="alertContainer"></div>
@@ -229,21 +241,19 @@
                                 </div>
                                 <div>
                                     <div class="status-badge">Sedang Diantar</div>
-                                    <div class="order-actions" style="margin-top: 12px;">
-                                        <button class="btn-complete" onclick="completeDelivery({{ $order->id }})">
-                                            Selesaikan Pengantaran
-                                        </button>
-                                    </div>
+                                    <button class="btn-complete" onclick="completeDelivery({{ $order->id }})">
+                                        Selesaikan Pengantaran
+                                    </button>
                                 </div>
                             </div>
 
                             <div class="address-section">
-                                <div class="address-label">Alamat Pengantaran:</div>
+                                <div class="address-label">📍 Alamat Pengantaran</div>
                                 <div class="address-text">{{ $order->buyer_address }}</div>
                             </div>
 
                             <div class="order-items">
-                                <div class="items-label">Detail Pesanan:</div>
+                                <div class="items-label">🍽️ Detail Pesanan</div>
                                 <div class="items-list">
                                     @foreach($order->menus as $menu)
                                         <div>{{ $menu->pivot->quantity }}x {{ $menu->name }}</div>
@@ -259,7 +269,7 @@
                 </div>
             @else
                 <div class="empty-state">
-                    <h3>Tidak Ada Pesanan Sedang Diproses</h3>
+                    <h3>📦 Tidak Ada Pesanan Sedang Diantar</h3>
                     <p>Saat ini Anda tidak memiliki pesanan yang sedang dalam proses pengantaran.</p>
                 </div>
             @endif
@@ -284,30 +294,37 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     showAlert(data.message, 'success');
                     
-                    // Remove order card dari tampilan
+                    // Remove order card
                     const orderCard = document.getElementById(`order-${orderId}`);
-                    orderCard.style.transition = 'opacity 0.5s';
+                    orderCard.style.transition = 'all 0.3s ease';
                     orderCard.style.opacity = '0';
+                    orderCard.style.transform = 'translateX(100%)';
                     
                     setTimeout(() => {
                         orderCard.remove();
                         
-                        // Check if no more orders
+                        // Reload if no more orders
                         const remainingOrders = document.querySelectorAll('.order-card');
                         if (remainingOrders.length === 0) {
-                            location.reload();
+                            setTimeout(() => location.reload(), 1000);
                         }
-                    }, 500);
+                    }, 300);
                 } else {
-                    showAlert(data.message, 'error');
+                    showAlert(data.message || 'Terjadi kesalahan saat menyelesaikan pengantaran', 'error');
                     button.disabled = false;
                     button.textContent = originalText;
                 }
@@ -322,20 +339,18 @@
 
         function showAlert(message, type) {
             const alertContainer = document.getElementById('alertContainer');
-            
-            // Remove existing alerts
             alertContainer.innerHTML = '';
             
-            // Create new alert
             const alert = document.createElement('div');
             alert.className = `alert alert-${type}`;
             alert.textContent = message;
             
             alertContainer.appendChild(alert);
             
-            // Auto remove after 5 seconds
             setTimeout(() => {
-                alert.remove();
+                alert.style.transition = 'opacity 0.3s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
             }, 5000);
         }
     </script>

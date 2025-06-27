@@ -1,6 +1,4 @@
 <?php
-// app/Models/Order.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -24,11 +22,10 @@ class Order extends Model
         'invoice'
     ];
 
-    // Status constants - gunakan yang lebih pendek
+    // Status constants - sesuai dengan orders.blade.php
     const STATUS_PENDING = 'pending';
     const STATUS_PROCESSING = 'processing';
     const STATUS_SHIPPED = 'shipped';
-    const STATUS_DELIVERY = 'delivery'; // Ubah dari 'on_delivery' ke 'delivery'
     const STATUS_DELIVERED = 'delivered';
     const STATUS_CANCELLED = 'cancelled';
 
@@ -38,12 +35,12 @@ class Order extends Model
             self::STATUS_PENDING => 'Menunggu',
             self::STATUS_PROCESSING => 'Diproses',
             self::STATUS_SHIPPED => 'Dikirim',
-            self::STATUS_DELIVERY => 'Sedang Diantar', // Ubah dari 'on_delivery' ke 'delivery'
             self::STATUS_DELIVERED => 'Selesai',
             self::STATUS_CANCELLED => 'Dibatalkan',
         ];
     }
 
+    // Relasi tetap sama...
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -72,25 +69,22 @@ class Order extends Model
         return $this->subtotal + $this->shipping_fee + $this->admin_fee;
     }
 
-    // Accessor untuk nama pembeli (prioritas: fullName, lalu username)
+    // Perbaiki accessor buyer name
     public function getBuyerNameAttribute()
     {
         if ($this->user) {
-            return $this->user->fullName ?: $this->user->username;
+            return $this->user->name ?: ($this->user->fullName ?: $this->user->username);
         }
         return 'User tidak ditemukan';
     }
 
-    // Accessor untuk alamat pembeli (prioritas: UserAddress, lalu User address)
     public function getBuyerAddressAttribute()
     {
-        // Prioritas 1: Alamat dari tabel user_addresses
         if ($this->address && $this->address->address) {
             $label = $this->address->label ? "({$this->address->label}) " : '';
             return $label . $this->address->address;
         }
         
-        // Prioritas 2: Alamat dari tabel users
         if ($this->user && $this->user->address) {
             return $this->user->address;
         }
@@ -98,9 +92,9 @@ class Order extends Model
         return 'Alamat tidak tersedia';
     }
 
-    // Scope untuk filter berdasarkan status
-    public function scopeByStatus($query, $status)
+    public function getStatusLabelAttribute()
     {
-        return $query->where('status', $status);
+        $labels = self::getStatusOptions();
+        return $labels[$this->status] ?? ucfirst($this->status);
     }
 }

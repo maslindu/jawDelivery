@@ -9,23 +9,24 @@ use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class AdminOrderController extends Controller
 {
     public function index()
     {
-        // Get all orders with relationships including address
-        $orders = Order::with(['user', 'menus', 'address'])
+        // Get all orders with relationships including address and driver
+        $orders = Order::with(['user', 'menus', 'address', 'driver'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Count orders by status
+        // Count orders by status - gunakan konstanta dari model
         $statusCounts = [
-            'pending' => Order::where('status', 'pending')->count(),
-            'processing' => Order::where('status', 'processing')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
+            Order::STATUS_PENDING => Order::where('status', Order::STATUS_PENDING)->count(),
+            Order::STATUS_PROCESSING => Order::where('status', Order::STATUS_PROCESSING)->count(),
+            Order::STATUS_SHIPPED => Order::where('status', Order::STATUS_SHIPPED)->count(),
+            Order::STATUS_DELIVERED => Order::where('status', Order::STATUS_DELIVERED)->count(),
+            Order::STATUS_CANCELLED => Order::where('status', Order::STATUS_CANCELLED)->count(),
         ];
 
         return view('admin.orders', compact('orders', 'statusCounts'));
@@ -35,7 +36,7 @@ class AdminOrderController extends Controller
     public function detail($id)
     {
         try {
-            $order = Order::with(['user', 'menus', 'address'])->findOrFail($id);
+            $order = Order::with(['user', 'menus', 'address', 'driver'])->findOrFail($id);
             
             return view('admin.orders-detail', compact('order'));
         } catch (\Exception $e) {
@@ -48,31 +49,49 @@ class AdminOrderController extends Controller
     {
         try {
             $request->validate([
-                'status' => 'required|in:pending,processing,shipped,delivered,cancelled'
+                'status' => 'required|in:' . implode(',', array_keys(Order::getStatusOptions()))
             ]);
 
             $order = Order::findOrFail($id);
             $oldStatus = $order->status;
             $newStatus = $request->status;
 
+            // Validasi perubahan status
+            if (!$this->isValidStatusTransition($oldStatus, $newStatus)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Perubahan status tidak valid dari ' . $oldStatus . ' ke ' . $newStatus
+                ], 400);
+            }
+
             // Update status order
             $order->update(['status' => $newStatus]);
 
+            // Log perubahan status
+            Log::info('Order status updated', [
+                'order_id' => $order->id,
+                'invoice' => $order->invoice,
+                'old_status' => $oldStatus,
+                'new_status' => $newStatus,
+                'updated_by' => auth()->id()
+            ]);
+
             // Get updated status counts
             $statusCounts = [
-                'pending' => Order::where('status', 'pending')->count(),
-                'processing' => Order::where('status', 'processing')->count(),
-                'shipped' => Order::where('status', 'shipped')->count(),
-                'delivered' => Order::where('status', 'delivered')->count(),
-                'cancelled' => Order::where('status', 'cancelled')->count(),
+                Order::STATUS_PENDING => Order::where('status', Order::STATUS_PENDING)->count(),
+                Order::STATUS_PROCESSING => Order::where('status', Order::STATUS_PROCESSING)->count(),
+                Order::STATUS_SHIPPED => Order::where('status', Order::STATUS_SHIPPED)->count(),
+                Order::STATUS_DELIVERED => Order::where('status', Order::STATUS_DELIVERED)->count(),
+                Order::STATUS_CANCELLED => Order::where('status', Order::STATUS_CANCELLED)->count(),
             ];
 
             return response()->json([
                 'success' => true,
-                'message' => 'Status pesanan berhasil diperbarui',
+                'message' => 'Status pesanan berhasil diperbarui dari ' . Order::getStatusOptions()[$oldStatus] . ' ke ' . Order::getStatusOptions()[$newStatus],
                 'order' => [
                     'id' => $order->id,
                     'status' => $order->status,
+                    'status_label' => Order::getStatusOptions()[$order->status],
                     'invoice' => $order->invoice
                 ],
                 'statusCounts' => $statusCounts,
@@ -81,6 +100,12 @@ class AdminOrderController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            Log::error('Error updating order status', [
+                'order_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui status: ' . $e->getMessage()
@@ -88,15 +113,36 @@ class AdminOrderController extends Controller
         }
     }
 
+    // Method untuk validasi transisi status
+    private function isValidStatusTransition($oldStatus, $newStatus)
+    {
+        // Definisi transisi status yang valid
+        $validTransitions = [
+            Order::STATUS_PENDING => [Order::STATUS_PROCESSING, Order::STATUS_CANCELLED],
+            Order::STATUS_PROCESSING => [Order::STATUS_SHIPPED, Order::STATUS_CANCELLED],
+            Order::STATUS_SHIPPED => [Order::STATUS_DELIVERED, Order::STATUS_CANCELLED],
+            Order::STATUS_DELIVERED => [], // Status final
+            Order::STATUS_CANCELLED => [], // Status final
+        ];
+
+        // Jika status sama, selalu valid (tidak ada perubahan)
+        if ($oldStatus === $newStatus) {
+            return true;
+        }
+
+        // Cek apakah transisi valid
+        return in_array($newStatus, $validTransitions[$oldStatus] ?? []);
+    }
+
     // Method untuk mendapatkan status counts
     public function getStatusCounts()
     {
         $statusCounts = [
-            'pending' => Order::where('status', 'pending')->count(),
-            'processing' => Order::where('status', 'processing')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'delivered' => Order::where('status', 'delivered')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
+            Order::STATUS_PENDING => Order::where('status', Order::STATUS_PENDING)->count(),
+            Order::STATUS_PROCESSING => Order::where('status', Order::STATUS_PROCESSING)->count(),
+            Order::STATUS_SHIPPED => Order::where('status', Order::STATUS_SHIPPED)->count(),
+            Order::STATUS_DELIVERED => Order::where('status', Order::STATUS_DELIVERED)->count(),
+            Order::STATUS_CANCELLED => Order::where('status', Order::STATUS_CANCELLED)->count(),
         ];
 
         return response()->json($statusCounts);
@@ -106,11 +152,32 @@ class AdminOrderController extends Controller
     public function show($id)
     {
         try {
-            $order = Order::with(['user', 'menus', 'address'])->findOrFail($id);
+            $order = Order::with(['user', 'menus', 'address', 'driver'])->findOrFail($id);
             
             return response()->json([
                 'success' => true,
-                'order' => $order
+                'order' => [
+                    'id' => $order->id,
+                    'invoice' => $order->invoice,
+                    'status' => $order->status,
+                    'status_label' => $order->status_label,
+                    'buyer_name' => $order->buyer_name,
+                    'buyer_address' => $order->buyer_address,
+                    'total_amount' => $order->total_amount,
+                    'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                    'updated_at' => $order->updated_at->format('Y-m-d H:i:s'),
+                    'driver' => $order->driver ? [
+                        'id' => $order->driver->id,
+                        'name' => $order->driver->user->name ?? $order->driver->user->username,
+                    ] : null,
+                    'menus' => $order->menus->map(function($menu) {
+                        return [
+                            'name' => $menu->name,
+                            'quantity' => $menu->pivot->quantity,
+                            'price' => $menu->price
+                        ];
+                    })
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([

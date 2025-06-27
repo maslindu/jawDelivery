@@ -80,7 +80,7 @@ class OrderController extends Controller
                 'payment_status' => 'unpaid',
                 'shipping_fee' => $shipping,
                 'admin_fee' => $adminFee,
-                'status' => 'pending',
+                'status' => Order::STATUS_PENDING, // Gunakan konstanta
                 'invoice' => $invoice_number
             ]);
 
@@ -113,14 +113,24 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $order = Order::with(['menus', 'address'])
-            ->where('id', $id)
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+            $order = Order::with(['menus', 'address'])
+                ->where('id', $id)
+                ->where('user_id', $user->id)
+                ->firstOrFail();
 
-        return view('order', compact('order'));
+            return view('order', compact('order'));
+        } catch (\Exception $e) {
+            Log::error('Error showing order', [
+                'order_id' => $id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('history')->with('error', 'Pesanan tidak ditemukan');
+        }
     }
 
     // Method untuk mendapatkan status terbaru order
@@ -158,23 +168,12 @@ class OrderController extends Controller
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengambil status pesanan'
             ], 500);
-        
         }
     }
 
-    // Helper method untuk mendapatkan label status
+    // Helper method untuk mendapatkan label status yang konsisten
     private function getStatusLabel($status)
     {
-        $labels = [
-            'pending' => 'Menunggu',
-            'processing' => 'Diproses',
-            'shipped' => 'Dikirim',
-            'delivered' => 'Selesai',
-            'completed' => 'Selesai',
-            'cancelled' => 'Dibatalkan',
-            'failed' => 'Gagal',
-        ];
-
-        return $labels[$status] ?? $status;
+        return Order::getStatusOptions()[$status] ?? ucfirst($status);
     }
 }

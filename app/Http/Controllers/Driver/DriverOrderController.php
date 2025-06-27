@@ -22,9 +22,9 @@ class DriverOrderController extends Controller
                 return view('drivers.ready-orders', ['orders' => collect()]);
             }
 
-            // Ambil pesanan dengan status "shipped" (siap diantar)
+            // Ambil pesanan dengan status "shipped" (siap diantar) yang belum diambil driver
             $orders = Order::with(['user', 'address', 'menus'])
-                          ->where('status', 'shipped')
+                          ->where('status', Order::STATUS_SHIPPED)
                           ->whereNull('driver_id') // Belum diambil driver
                           ->orderBy('created_at', 'asc')
                           ->get();
@@ -62,10 +62,10 @@ class DriverOrderController extends Controller
                 return view('drivers.processing-orders', ['orders' => collect()]);
             }
 
-            // Orders yang sedang diproses oleh driver ini - gunakan status 'delivery' yang lebih pendek
+            // Orders yang sedang diproses oleh driver ini - status 'shipped' dengan driver_id
             $orders = Order::with(['user', 'address', 'menus'])
                           ->where('driver_id', $driver->id)
-                          ->whereIn('status', ['delivery']) // Ubah dari 'on_delivery' ke 'delivery'
+                          ->where('status', Order::STATUS_SHIPPED) // Masih shipped tapi sudah ada driver_id
                           ->orderBy('created_at', 'desc')
                           ->get();
 
@@ -99,7 +99,7 @@ class DriverOrderController extends Controller
             // History pengantaran yang sudah selesai
             $orders = Order::with(['user', 'address', 'menus'])
                           ->where('driver_id', $driver->id)
-                          ->whereIn('status', ['delivered', 'completed'])
+                          ->whereIn('status', [Order::STATUS_DELIVERED])
                           ->orderBy('created_at', 'desc')
                           ->paginate(10);
 
@@ -161,7 +161,7 @@ class DriverOrderController extends Controller
 
             // Cari order yang tersedia
             $order = Order::where('id', $orderId)
-                         ->where('status', 'shipped')
+                         ->where('status', Order::STATUS_SHIPPED)
                          ->whereNull('driver_id')
                          ->lockForUpdate()
                          ->first();
@@ -184,10 +184,10 @@ class DriverOrderController extends Controller
                 'current_driver_id' => $order->driver_id
             ]);
 
-            // Update order dengan driver dan ubah status - gunakan 'delivery' yang lebih pendek
+            // Update order dengan driver - status tetap 'shipped' tapi ada driver_id
             $updated = $order->update([
-                'driver_id' => $driver->id,
-                'status' => 'delivery' // Ubah dari 'on_delivery' ke 'delivery'
+                'driver_id' => $driver->id
+                // Status tetap 'shipped' - tidak berubah
             ]);
 
             if (!$updated) {
@@ -212,8 +212,8 @@ class DriverOrderController extends Controller
                 'order_id' => $orderId,
                 'user_id' => $user->id,
                 'order_invoice' => $order->invoice,
-                'new_status' => $order->status,
-                'new_driver_id' => $order->driver_id
+                'status' => $order->status,
+                'driver_id' => $order->driver_id
             ]);
 
             return response()->json([
@@ -255,7 +255,7 @@ class DriverOrderController extends Controller
 
             $order = Order::where('id', $orderId)
                          ->where('driver_id', $driver->id)
-                         ->where('status', 'delivery') // Ubah dari 'on_delivery' ke 'delivery'
+                         ->where('status', Order::STATUS_SHIPPED) // Status shipped dengan driver_id
                          ->lockForUpdate()
                          ->first();
 
@@ -269,7 +269,7 @@ class DriverOrderController extends Controller
 
             // Update status order menjadi delivered
             $updated = $order->update([
-                'status' => 'delivered'
+                'status' => Order::STATUS_DELIVERED
             ]);
 
             if (!$updated) {

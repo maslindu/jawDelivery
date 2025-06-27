@@ -1,4 +1,4 @@
-// Order state configurations yang konsisten
+// Order state configurations yang konsisten dengan backend
 const orderStates = {
     pending: {
         title: "Pesanan Diterima",
@@ -38,14 +38,6 @@ const orderStates = {
         statusDot: "completed",
         footerNote: "Jangan lupa berikan rating dan review untuk membantu kami memberikan layanan yang lebih baik."
     },
-    completed: {
-        title: "Pesanan Selesai",
-        subtitle: "Terima kasih! Pesanan Anda telah berhasil diselesaikan. Selamat menikmati!",
-        icon: `<div class="clock-face completed-icon">✅</div>`,
-        statusText: "Pesanan Selesai",
-        statusDot: "completed",
-        footerNote: "Jangan lupa berikan rating dan review untuk membantu kami memberikan layanan yang lebih baik."
-    },
     cancelled: {
         title: "Pesanan Dibatalkan",
         subtitle: "Pesanan Anda telah dibatalkan. Dana akan dikembalikan dalam 1-3 hari kerja.",
@@ -53,14 +45,6 @@ const orderStates = {
         statusText: "Pesanan Dibatalkan",
         statusDot: "cancelled",
         footerNote: "Jika Anda memiliki pertanyaan tentang pembatalan ini, silakan hubungi customer service kami."
-    },
-    failed: {
-        title: "Pesanan Gagal",
-        subtitle: "Pesanan Anda mengalami kendala dan tidak dapat diproses.",
-        icon: `<div class="clock-face cancelled-icon">❌</div>`,
-        statusText: "Pesanan Gagal",
-        statusDot: "cancelled",
-        footerNote: "Silakan hubungi customer service untuk informasi lebih lanjut."
     }
 };
 
@@ -114,7 +98,7 @@ function checkStatusUpdate() {
     if (!orderId || !currentStatus) return;
 
     // Skip checking if order is in final state
-    if (['delivered', 'completed', 'cancelled', 'failed'].includes(currentStatus)) {
+    if (['delivered', 'cancelled'].includes(currentStatus)) {
         if (statusCheckInterval) {
             clearInterval(statusCheckInterval);
             statusCheckInterval = null;
@@ -160,7 +144,7 @@ function showStatusUpdateNotification(newStatus) {
     notification.className = 'status-notification';
     notification.innerHTML = `
         <div class="notification-content">
-            <span class="notification-icon">📱</span>
+            <span class="notification-icon">🔔</span>
             <span class="notification-text">Status diperbarui: ${config.statusText}</span>
         </div>
     `;
