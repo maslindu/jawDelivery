@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\ManageUserController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\DriverController;
@@ -57,7 +58,11 @@ Route::prefix('admin')->middleware(['role:admin'])->group(function () {
     Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
 
     Route::get('/manage-driver', [DriverController::class, 'index'])->name('admin.manage-driver');
-    Route::get('/financial-reports', function () { return view('admin.financial-reports'); })->name('admin.financial-reports');
+    
+    // Financial Reports Routes - Update ini
+    Route::get('/financial-reports', [AdminReportController::class, 'index'])->name('admin.financial-reports');
+    Route::get('/reports/export', [AdminReportController::class, 'export'])->name('admin.reports.export');
+    Route::get('/reports/revenue-data', [AdminReportController::class, 'getRevenueData'])->name('admin.reports.revenue-data');
 
     // Order Management Routes
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders');
