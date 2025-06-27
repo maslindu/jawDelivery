@@ -75,38 +75,48 @@
                     <a href="{{ route('admin.orders') }}">
                         <div class="profile-option">Kelola Pesanan</div>
                     </a>
+                    
                     <a href="{{ route('admin.manage-menu') }}">
                         <div class="profile-option">Kelola Menu & Kategori</div>
                     </a>
+                    
                     <a href="{{ route('admin.manage-driver') }}">
                         <div class="profile-option">Kelola Driver</div>
                     </a>
+                    
+                    {{-- PERBAIKAN: Gunakan route yang benar --}}
                     <a href="{{ route('admin.manage-users') }}">
                         <div class="profile-option">Kelola Pengguna</div>
                     </a>
+                    
                     <a href="{{ route('admin.financial-reports') }}">
                         <div class="profile-option">Laporan</div>
                     </a>
                 @else
-                    <a href="{{ route('user.address') }}">
-                        <div class="profile-option">Daftar Alamat</div>
-                    </a>
+                    @if(Route::has('user.address'))
+                        <a href="{{ route('user.address') }}">
+                            <div class="profile-option">Daftar Alamat</div>
+                        </a>
+                    @endif
 
-                    <a href="{{ route('user.history') }}">
-                        <div class="profile-option">Daftar Transaksi</div>
-                    </a>
+                    @if(Route::has('user.history'))
+                        <a href="{{ route('user.history') }}">
+                            <div class="profile-option">Daftar Transaksi</div>
+                        </a>
+                    @endif
 
-                    <a href="{{ route('favorite.index') }}">
-                        <div class="profile-option">Menu Favorit</div>
-                    </a>
+                    @if(Route::has('favorite.index'))
+                        <a href="{{ route('favorite.index') }}">
+                            <div class="profile-option">Menu Favorit</div>
+                        </a>
+                    @endif
                 @endif
 
-
                 <div class="logout-button" id=logoutButton>LOGOUT</div>
-
             </div>
         @endauth
     </div>
+    
     <div id="logoutPopup" class="modal" style="display:none; position: fixed; top: 50%; left: 50%;
     transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; padding: 20px; z-index: 1000;">
         <div class="modal-title">Logout?</div>
@@ -117,8 +127,8 @@
         <form id="logoutForm" action="{{ route('api.auth.logout') }}" method="POST" style="display:none;">
             @csrf
         </form>
-
     </div>
+    
     <div id="popupOverlay" style="display:none; position: fixed; top: 0; left: 0;
     width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
 </header>

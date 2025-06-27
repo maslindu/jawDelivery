@@ -15,7 +15,7 @@
    @include('components.header')
 
    <main class="main-content">
-      <h1 class="section-title">Kelola Menu & Kategori</h1>
+      <h1 class="section-title">Kelola Kategori & Menu</h1>
 
       @if(session('success'))
          <div class="alert alert-success">

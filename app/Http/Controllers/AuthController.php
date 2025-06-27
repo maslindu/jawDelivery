@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Enums\RoleEnum;
 
@@ -28,13 +28,11 @@ class AuthController extends Controller
             'password'  => 'required|string|min:8|confirmed',
         ]);
 
-
         if ($validator->fails()) {
             return redirect()->back()->withErrors([
                 'login_error' => $validator->errors()->first()
-            ]);
+            ])->withInput($request->except('password', 'password_confirmation'));
         }
-
 
         $validatedData = $validator->validated();
         $validatedData['password'] = Hash::make($validatedData['password']);
@@ -48,59 +46,56 @@ class AuthController extends Controller
                 'password' => $validatedData['password'],
             ]);
 
-
+            // Attach role pelanggan
             $role = Role::where('name', RoleEnum::PELANGGAN->value)->first();
-            $user->roles()->attach($role->id);
-            auth()->login($user);
+            if ($role) {
+                $user->roles()->attach($role->id);
+            }
+            
+            Auth::login($user);
             return redirect("/dashboard");
 
         } catch (\Exception $e) {
             return redirect()->back()->withErrors([
-                'login_error' => 'An unexpected error occurred. Please try again.'
-            ]);
+                'login_error' => 'An unexpected error occurred during registration. Please try again.'
+            ])->withInput($request->except('password', 'password_confirmation'));
         }
-
     }
 
     public function login(Request $request)
     {
-        try {
-            $request->validate([
-                'username' => 'required',
-                'password' => 'required',
-            ]);
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-            $user = User::where('username', $request->username)->first();
+        $user = User::where('username', $request->username)->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return redirect()->back()->withErrors([
-                    'login_error' => 'Invalid username or password.'
-                ]);
-            }
-            auth()->login($user);
-            if ($user->hasRole('admin')) {
-                return redirect('/admin');
-            } elseif ($user->hasRole('pelanggan')) {
-                return redirect('/dashboard');
-            }
-
-        } catch (\Exception $e) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return redirect()->back()->withErrors([
-                'login_error' => 'An unexpected error occurred. Please try again.'
-            ]);
+                'login_error' => 'Invalid username or password.'
+            ])->withInput($request->only('username'));
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+        
+        // PERBAIKAN: Cek role dengan cara yang lebih sederhana
+        $userRoles = $user->roles->pluck('name')->toArray();
+        
+        if (in_array('admin', $userRoles)) {
+            return redirect('/admin');
+        } else {
+            return redirect('/dashboard');
         }
     }
 
-
-
     public function logout(Request $request)
     {
-        auth()->logout();
-
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        
+        return redirect('/')->with('success', 'You have been logged out successfully.');
     }
-
 }
-
