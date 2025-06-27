@@ -82,6 +82,8 @@ class AuthController extends Controller
                 return redirect('/admin');
             } elseif ($user->hasRole('pelanggan')) {
                 return redirect('/dashboard');
+            } elseif ($user->hasRole('kurir')) {
+                return redirect('/driver');
             }
 
         } catch (\Exception $e) {

@@ -25,5 +25,9 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard');
     }
+    public function driver()
+    {
+        return view('drivers.dashboard');
+    }
 
 }

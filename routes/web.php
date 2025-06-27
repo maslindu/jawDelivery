@@ -33,7 +33,7 @@ Route::prefix('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('api.auth.logout');
 });
 
-Route::middleware(['role:admin|pelanggan'])->group(function () {
+Route::middleware(['role:admin|pelanggan|kurir'])->group(function () {
     Route::get('/profile', [UserController::class, 'index'])->name('user');
     Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 });
@@ -136,8 +136,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{id}/status', [OrderController::class, 'getStatus'])->name('orders.get-status');
 });
 
-
-
 Route::middleware(['auth'])->group(function () {
     Route::resource('drivers', DriverController::class);
     Route::patch('drivers/{driver}/toggle-availability', [DriverController::class, 'toggleAvailability'])
@@ -150,4 +148,8 @@ Route::middleware(['auth'])->group(function () {
 Route::prefix('api')->group(function () {
     Route::get('drivers/available', [DriverController::class, 'getAvailableDrivers'])
         ->name('api.drivers.available');
+});
+
+Route::prefix('driver')->middleware(['role:kurir'])->group(function () {
+    Route::get('/', [DashboardController::class, 'driver'])->name('driver.dashboard');
 });
