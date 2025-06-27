@@ -86,6 +86,18 @@ Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
     })->name('password.change');
 });
 
+//routes kurir
+// Driver Dashboard Routes
+Route::prefix('driver')->middleware(['auth', 'role:kurir'])->group(function () {
+    Route::get('/', [App\Http\Controllers\Driver\DriverDashboardController::class, 'index'])->name('driver.dashboard');
+    Route::get('/profile', [App\Http\Controllers\Driver\DriverDashboardController::class, 'profile'])->name('driver.profile');
+    Route::get('/ready-orders', [App\Http\Controllers\Driver\DriverDashboardController::class, 'readyOrders'])->name('driver.ready-orders');
+    Route::get('/processing-orders', [App\Http\Controllers\Driver\DriverDashboardController::class, 'processingOrders'])->name('driver.processing-orders');
+    Route::get('/delivery-history', [App\Http\Controllers\Driver\DriverDashboardController::class, 'deliveryHistory'])->name('driver.delivery-history');
+});
+
+
+
 Route::prefix('order')->middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::post('/', [OrderController::class, 'store'])->name('order.store');
     Route::get('/{id}', [OrderController::class, 'show'])->name('order.show');
