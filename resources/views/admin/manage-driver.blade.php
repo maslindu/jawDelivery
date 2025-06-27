@@ -17,7 +17,7 @@
             <div class="driver-section">
                 <div class="section-header">
                     <h2 class="section-title">Kelola Driver</h2>
-                    <a href="{{ route('drivers.create') }}" class="btn-add-driver">
+                    <a href="{{ route('admin.drivers.create') }}" class="btn-add-driver">
                         <span>+</span> Tambah Driver
                     </a>
                 </div>
@@ -63,16 +63,16 @@
                                 </div>
                             </div>
                             <div class="driver-actions">
-                                <a href="{{ route('drivers.show', $driver) }}" class="btn-action btn-view" title="Lihat Detail">
+                                <a href="{{ route('admin.drivers.show', $driver) }}" class="btn-action btn-view" title="Lihat Detail">
                                     👁️
                                 </a>
-                                <a href="{{ route('drivers.edit', $driver) }}" class="btn-action btn-edit" title="Edit">
+                                <a href="{{ route('admin.drivers.edit', $driver) }}" class="btn-action btn-edit" title="Edit">
                                     ✏️
                                 </a>
                                 <button onclick="toggleAvailability({{ $driver->id }})" class="btn-action btn-toggle" title="Toggle Ketersediaan">
                                     {{ $driver->is_available ? '🔴' : '🟢' }}
                                 </button>
-                                <form action="{{ route('drivers.destroy', $driver) }}" method="POST" class="delete-form" style="display: inline;">
+                                <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" class="delete-form" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-action btn-delete" title="Hapus" onclick="return confirm('Yakin ingin menghapus driver ini?')">
@@ -84,7 +84,7 @@
                     @empty
                         <div class="empty-state">
                             <p>Belum ada driver yang terdaftar.</p>
-                            <a href="{{ route('drivers.create') }}" class="btn-add-driver">Tambah Driver Pertama</a>
+                            <a href="{{ route('admin.drivers.create') }}" class="btn-add-driver">Tambah Driver Pertama</a>
                         </div>
                     @endforelse
                 </div>
@@ -102,7 +102,7 @@
     <script>
         async function toggleAvailability(driverId) {
             try {
-                const response = await fetch(`/drivers/${driverId}/toggle-availability`, {
+                const response = await fetch(`/admin/drivers/${driverId}/toggle-availability`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',

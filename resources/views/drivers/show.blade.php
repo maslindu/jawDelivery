@@ -18,8 +18,8 @@
                 <div class="section-header">
                     <h2 class="section-title">Detail Driver</h2>
                     <div class="header-actions">
-                        <a href="{{ route('drivers.edit', $driver) }}" class="btn-edit">Edit Driver</a>
-                        <a href="{{ route('drivers.index') }}" class="btn-back">← Kembali</a>
+                        <a href="{{ route('admin.drivers.edit', $driver) }}" class="btn-edit">Edit Driver</a>
+                        <a href="{{ route('admin.manage-driver') }}" class="btn-back">← Kembali</a>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@
                         <button onclick="toggleAvailability({{ $driver->id }})" class="btn-toggle-availability">
                             {{ $driver->is_available ? 'Set Tidak Tersedia' : 'Set Tersedia' }}
                         </button>
-                        <form action="{{ route('drivers.destroy', $driver) }}" method="POST" class="delete-form">
+                        <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" class="delete-form">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-delete-driver" onclick="return confirm('Yakin ingin menghapus driver ini? Tindakan ini tidak dapat dibatalkan.')">
@@ -147,7 +147,7 @@
     <script>
         async function toggleAvailability(driverId) {
             try {
-                const response = await fetch(`/drivers/${driverId}/toggle-availability`, {
+                const response = await fetch(`/admin/drivers/${driverId}/toggle-availability`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',

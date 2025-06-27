@@ -17,7 +17,7 @@
             <div class="driver-section">
                 <div class="section-header">
                     <h2 class="section-title">Edit Driver: {{ $driver->user->fullName ?? $driver->user->username }}</h2>
-                    <a href="{{ route('drivers.index') }}" class="btn-back">← Kembali</a>
+                    <a href="{{ route('admin.manage-driver') }}" class="btn-back">← Kembali</a>
                 </div>
 
                 @if($errors->any())
@@ -30,7 +30,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('drivers.update', $driver) }}" method="POST" class="driver-form">
+                <form action="{{ route('admin.drivers.update', $driver) }}" method="POST" class="driver-form">
                     @csrf
                     @method('PUT')
 
@@ -131,7 +131,7 @@
 
                     <div class="form-actions">
                         <button type="submit" class="btn-submit">Update Driver</button>
-                        <a href="{{ route('drivers.index') }}" class="btn-cancel">Batal</a>
+                        <a href="{{ route('admin.manage-driver') }}" class="btn-cancel">Batal</a>
                     </div>
                 </form>
             </div>
