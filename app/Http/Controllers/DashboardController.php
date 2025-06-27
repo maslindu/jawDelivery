@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $categories = Category::all();
-        $favMenuIds = $user->menus->pluck('id')->toArray();
+        $favMenuIds = $user?->menus?->pluck('id')->toArray() ?? [];
         $menuItems = Menu::with('categories')->get();
         $menuItems->each(function ($menu) use ($favMenuIds) {
             $menu->is_fav = in_array($menu->id, $favMenuIds);
