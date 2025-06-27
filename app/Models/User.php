@@ -48,4 +48,9 @@ class User extends Authenticatable implements LaratrustUser
         return $this->belongsToMany(Menu::class, 'user_menu')
                     ->withTimestamps();
     }
+
+    public function driver()
+    {
+        return $this->hasOne(Driver::class);
+    }
 }

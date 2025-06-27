@@ -112,6 +112,8 @@ Route::middleware(['auth', 'role:pelanggan'])->prefix('favorites')->name('favori
     Route::delete('/', [FavoriteController::class, 'destroy'])->name('destroy');
 });
 
+Route::put('/driver/update', [DriverController::class, 'updateDriver'])->name('driver.update');
+
 
 
 Route::get('/admin/orders-detail/{code?}', function ($code = null) {
