@@ -91,11 +91,16 @@ Route::prefix('user')->middleware(['role:pelanggan'])->group(function () {
 Route::prefix('driver')->middleware(['auth', 'role:kurir'])->group(function () {
     Route::get('/', [App\Http\Controllers\Driver\DriverDashboardController::class, 'index'])->name('driver.dashboard');
     Route::get('/profile', [App\Http\Controllers\Driver\DriverDashboardController::class, 'profile'])->name('driver.profile');
-    Route::get('/ready-orders', [App\Http\Controllers\Driver\DriverDashboardController::class, 'readyOrders'])->name('driver.ready-orders');
-    Route::get('/processing-orders', [App\Http\Controllers\Driver\DriverDashboardController::class, 'processingOrders'])->name('driver.processing-orders');
-    Route::get('/delivery-history', [App\Http\Controllers\Driver\DriverDashboardController::class, 'deliveryHistory'])->name('driver.delivery-history');
+    
+    // Order management routes
+    Route::get('/ready-orders', [App\Http\Controllers\Driver\DriverOrderController::class, 'readyOrders'])->name('driver.ready-orders');
+    Route::get('/processing-orders', [App\Http\Controllers\Driver\DriverOrderController::class, 'processingOrders'])->name('driver.processing-orders');
+    Route::get('/delivery-history', [App\Http\Controllers\Driver\DriverOrderController::class, 'deliveryHistory'])->name('driver.delivery-history');
+    
+    // Actions untuk driver
+    Route::post('/take-order/{orderId}', [App\Http\Controllers\Driver\DriverOrderController::class, 'takeOrder'])->name('driver.take-order');
+    Route::post('/complete-delivery/{orderId}', [App\Http\Controllers\Driver\DriverOrderController::class, 'completeDelivery'])->name('driver.complete-delivery');
 });
-
 
 
 Route::prefix('order')->middleware(['auth', 'role:pelanggan'])->group(function () {
