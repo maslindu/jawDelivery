@@ -122,13 +122,10 @@ Route::middleware(['auth', 'role:pelanggan'])->prefix('favorites')->name('favori
     Route::delete('/', [FavoriteController::class, 'destroy'])->name('destroy');
 });
 
-<<<<<<< HEAD
 Route::put('/driver/update', [DriverController::class, 'updateDriver'])->name('driver.update');
 
 
 
-=======
->>>>>>> a4a2ff740fedc57e4de593510c1a8db985ca34d1
 Route::get('/admin/orders-detail/{code?}', function ($code = null) {
     return view('admin.orders-detail', ['code' => $code]);
 });
