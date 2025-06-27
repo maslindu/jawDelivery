@@ -1,10 +1,10 @@
 <?php
+// app/Models/Driver.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Driver extends Model
 {
@@ -19,57 +19,45 @@ class Driver extends Model
         'status',
         'rating',
         'total_deliveries',
-        'working_hours',
         'is_available',
+        'working_hours'
     ];
 
     protected $casts = [
-        'working_hours' => 'array',
         'is_available' => 'boolean',
-        'rating' => 'decimal:2',
+        'working_hours' => 'array',
+        'rating' => 'decimal:2'
     ];
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeActive($query)
+    public function orders()
     {
-        return $query->where('status', 'active');
+        return $this->hasMany(Order::class);
     }
 
-    public function scopeAvailable($query)
-    {
-        return $query->where('is_available', true)->where('status', 'active');
-    }
-
-    public function getFullInfoAttribute()
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->user->fullName ?? $this->user->username,
-            'email' => $this->user->email,
-            'phone' => $this->user->phone,
-            'avatar_url' => $this->user->avatar_url,
-            'vehicle_type' => $this->vehicle_type,
-            'license_plate' => $this->license_plate,
-            'status' => $this->status,
-            'rating' => $this->rating,
-            'total_deliveries' => $this->total_deliveries,
-            'is_available' => $this->is_available,
-        ];
-    }
-
-    public function toggleAvailability()
-    {
-        $this->update(['is_available' => !$this->is_available]);
-        return $this;
-    }
-
+    // Method untuk increment deliveries
     public function incrementDeliveries()
     {
         $this->increment('total_deliveries');
         return $this;
+    }
+
+    // Method untuk toggle availability
+    public function toggleAvailability()
+    {
+        $this->is_available = !$this->is_available;
+        $this->save();
+        return $this;
+    }
+
+    // Scope untuk driver yang tersedia
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'active')
+                    ->where('is_available', true);
     }
 }

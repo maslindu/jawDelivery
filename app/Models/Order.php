@@ -13,7 +13,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'address_id',
-        'driver_id', // Tambahkan ini
+        'driver_id',
         'payment_method',
         'notes',
         'subtotal',
@@ -24,11 +24,11 @@ class Order extends Model
         'invoice'
     ];
 
-    // Status constants
+    // Status constants - gunakan yang lebih pendek
     const STATUS_PENDING = 'pending';
     const STATUS_PROCESSING = 'processing';
     const STATUS_SHIPPED = 'shipped';
-    const STATUS_ON_DELIVERY = 'on_delivery'; // Tambahkan ini
+    const STATUS_DELIVERY = 'delivery'; // Ubah dari 'on_delivery' ke 'delivery'
     const STATUS_DELIVERED = 'delivered';
     const STATUS_CANCELLED = 'cancelled';
 
@@ -38,7 +38,7 @@ class Order extends Model
             self::STATUS_PENDING => 'Menunggu',
             self::STATUS_PROCESSING => 'Diproses',
             self::STATUS_SHIPPED => 'Dikirim',
-            self::STATUS_ON_DELIVERY => 'Sedang Diantar', // Tambahkan ini
+            self::STATUS_DELIVERY => 'Sedang Diantar', // Ubah dari 'on_delivery' ke 'delivery'
             self::STATUS_DELIVERED => 'Selesai',
             self::STATUS_CANCELLED => 'Dibatalkan',
         ];
@@ -54,7 +54,7 @@ class Order extends Model
         return $this->belongsTo(UserAddress::class, 'address_id');
     }
 
-    public function driver() // Tambahkan relasi ini
+    public function driver()
     {
         return $this->belongsTo(Driver::class);
     }
