@@ -292,18 +292,18 @@
             .main-content {
                 padding: 10px;
             }
-            
+
             .driver-welcome {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 16px;
             }
-            
+
             .driver-status {
                 width: 100%;
                 justify-content: space-between;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -336,7 +336,7 @@
 </head>
 <body>
     @include('components.header')
-    
+
     <main class="main-content">
         <div class="driver-dashboard">
             <div class="dashboard-header">
@@ -351,7 +351,7 @@
                         </span>
                     </div>
                 </div>
-                
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number">{{ $stats['total_deliveries'] }}</div>

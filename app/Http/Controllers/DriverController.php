@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class DriverController extends Controller
 {
@@ -90,6 +91,31 @@ class DriverController extends Controller
     {
         $driver->load('user');
         return view('drivers.edit', compact('driver'));
+    }
+
+    public function updateDriver(Request $request)
+    {
+        $user = Auth::user();
+
+        // Validate the request
+        $validated = $request->validate([
+            'vehicle_type' => 'required|in:Motor,Mobil,Sepeda',
+            'license_plate' => 'required|string|max:20',
+            'driver_license' => 'nullable|string|max:50',
+            'vehicle_registration' => 'nullable|string|max:50',
+        ]);
+
+        // Ensure the user has a driver profile
+        $driver = $user->driver;
+
+        if (!$driver) {
+            return redirect()->back()->withErrors(['driver' => 'Profil driver tidak ditemukan.']);
+        }
+
+        // Update the driver data
+        $driver->update($validated);
+
+        return redirect()->back()->with('success', 'Informasi kendaraan berhasil diperbarui.');
     }
 
     public function update(Request $request, Driver $driver)

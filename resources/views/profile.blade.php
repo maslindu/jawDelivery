@@ -117,31 +117,47 @@
             </div>
         @endrole
 
+        @role('kurir')
+        <form method="POST" action="{{ route('driver.update') }}">
+            @csrf
+            @method('PUT')
+            <section class="profile-section">
+                <div class="form-section">
+                    <h3 class="form-section-title">Informasi Kendaraan</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vehicle_type" class="form-label">Jenis Kendaraan *</label>
+                            <select id="vehicle_type" name="vehicle_type" class="form-select" required>
+                                <option value="">Pilih Jenis Kendaraan</option>
+                                <option value="Motor" {{ old('vehicle_type', Auth::user()->driver->vehicle_type) == 'Motor' ? 'selected' : '' }}>Motor</option>
+                                <option value="Mobil" {{ old('vehicle_type', Auth::user()->driver->vehicle_type) == 'Mobil' ? 'selected' : '' }}>Mobil</option>
+                                <option value="Sepeda" {{ old('vehicle_type', Auth::user()->driver->vehicle_type) == 'Sepeda' ? 'selected' : '' }}>Sepeda</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="license_plate" class="form-label">Plat Nomor *</label>
+                            <input type="text" id="license_plate" name="license_plate" class="form-input" value="{{ old('license_plate', Auth::user()->driver->license_plate) }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="driver_license" class="form-label">Nomor SIM</label>
+                            <input type="text" id="driver_license" name="driver_license" class="form-input" value="{{ old('driver_license', Auth::user()->driver->driver_license) }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicle_registration" class="form-label">Nomor STNK</label>
+                            <input type="text" id="vehicle_registration" name="vehicle_registration" class="form-input" value="{{ old('vehicle_registration', Auth::user()->driver->vehicle_registration) }}">
+                        </div>
+                    </div>
+                <button type="submit" class="submit-btn">Submit Perubahan</button>
+                </div>
+            </section>
+        @endrole
+
     </main>
 
     <script src="{{ asset('js/header.js') }}" defer></script>
-    <script>
-        let isFormChanged = false;
-        let isSubmitting = false;
-
-        document.querySelectorAll('.form-input').forEach(input => {
-            input.addEventListener('input', () => {
-                isFormChanged = true;
-            });
-        });
-
-        document.querySelector('.submit-btn').addEventListener('click', () => {
-            isSubmitting = true;
-        });
-
-        window.addEventListener('beforeunload', function (e) {
-            if (isFormChanged && !isSubmitting) {
-                e.preventDefault();
-                e.returnValue = 'Perubahan yang belum disimpan akan hilang. Yakin ingin keluar atau me-refresh halaman?';
-            }
-        });
-    </script>
-
     <script>
         const uploadBtn = document.getElementById('uploadBtn');
         const photoInput = document.getElementById('photoInput');
