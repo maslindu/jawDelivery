@@ -13,6 +13,7 @@ function init() {
         confirmBtn.disabled = true;
         confirmBtn.classList.add('disabled');
     }
+    
     updateConfirmButtonState();
     bindQuantityButtons();
     bindDeleteButtons();
@@ -21,7 +22,6 @@ function init() {
 
     document.getElementById('openPaymentBtn')?.addEventListener('click', openPaymentModal);
 }
-
 
 function openPaymentModal() {
     document.getElementById('paymentModal')?.classList.add('active');
@@ -36,40 +36,74 @@ function bindQuantityButtons() {
 
 async function handleQuantityChange(e, button) {
     e.preventDefault();
+    
     const cartId = button.dataset.id;
     const isIncrement = button.classList.contains('increment');
-    const display = button.parentElement.querySelector('.quantity-display');
+    const productItem = button.closest('.product-item');
+    const display = productItem.querySelector('.quantity-display');
     const quantity = parseInt(display.textContent);
     const stock = parseInt(button.dataset.stock);
 
-    if (!cartId) return console.error('No cart ID provided');
-    const newQuantity = isIncrement ? quantity + 1 : quantity - 1;
+    if (!cartId) {
+        console.error('No cart ID provided');
+        return;
+    }
 
-    if (!isIncrement && quantity === 1) {
-        await deleteCartItem(cartId);
-    } else if (newQuantity <= stock) {
-        await updateCartQuantity(cartId, newQuantity, display);
+    // Validasi sebelum melakukan perubahan
+    if (isIncrement) {
+        if (quantity >= stock) {
+            showNotification('Stok tidak mencukupi!', 'error');
+            return;
+        }
+        await updateCartQuantity(cartId, quantity + 1, display, productItem);
+    } else {
+        if (quantity <= 1) {
+            // Jika quantity 1 dan dikurangi, hapus item
+            if (confirm('Hapus item dari keranjang?')) {
+                await deleteCartItem(cartId, productItem);
+            }
+        } else {
+            await updateCartQuantity(cartId, quantity - 1, display, productItem);
+        }
     }
 }
 
-async function updateCartQuantity(cartId, quantity, display) {
+async function updateCartQuantity(cartId, newQuantity, display, productItem) {
+    // Disable buttons sementara untuk mencegah multiple clicks
+    const buttons = productItem.querySelectorAll('.quantity-btn');
+    buttons.forEach(btn => btn.disabled = true);
+
     try {
-        const response = await fetch(`/cart/${cartId}/quantity`, {
+        const response = await fetch(`/user/cart/${cartId}/quantity`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
             },
-            body: JSON.stringify({ quantity })
+            body: JSON.stringify({ quantity: newQuantity })
         });
 
-        if (!response.ok) throw new Error("Server error");
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Server error");
+        }
 
         const data = await response.json();
+        
+        // Update UI
         display.textContent = data.quantity;
         updatePriceSummary(data);
+        updateConfirmButtonState();
+        
+        showNotification('Keranjang diperbarui', 'success');
+
     } catch (error) {
         console.error("Failed to update quantity:", error);
+        showNotification(error.message || 'Gagal memperbarui keranjang', 'error');
+    } finally {
+        // Re-enable buttons
+        buttons.forEach(btn => btn.disabled = false);
     }
 }
 
@@ -81,14 +115,27 @@ function bindDeleteButtons() {
 
 function deleteCartItemHandler(e) {
     e.preventDefault();
+    
     const cartId = e.currentTarget.dataset.id;
-    if (!cartId) return console.error('No cart ID found');
-    deleteCartItem(cartId);
+    const productItem = e.currentTarget.closest('.product-item');
+    
+    if (!cartId) {
+        console.error('No cart ID found');
+        return;
+    }
+    
+    if (confirm('Hapus item dari keranjang?')) {
+        deleteCartItem(cartId, productItem);
+    }
 }
 
-async function deleteCartItem(cartId) {
+async function deleteCartItem(cartId, productItem) {
+    // Disable delete button sementara
+    const deleteBtn = productItem.querySelector('.delete-btn');
+    if (deleteBtn) deleteBtn.disabled = true;
+
     try {
-        const response = await fetch(`/cart/${cartId}`, {
+        const response = await fetch(`/user/cart/${cartId}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
@@ -96,48 +143,146 @@ async function deleteCartItem(cartId) {
             }
         });
 
-        if (!response.ok) throw new Error('Failed to delete item');
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to delete item');
+        }
 
         const data = await response.json();
-        document.querySelector(`.product-item[data-id="${cartId}"]`)?.remove();
-        updatePriceSummary(data);
+        
+        // Remove item from DOM dengan animasi
+        productItem.style.transition = 'opacity 0.3s ease';
+        productItem.style.opacity = '0';
+        
+        setTimeout(() => {
+            productItem.remove();
+            updatePriceSummary(data);
+            updateConfirmButtonState();
+            
+            // Check jika keranjang kosong
+            const remainingItems = document.querySelectorAll('.product-item');
+            if (remainingItems.length === 0) {
+                showEmptyCartMessage();
+            }
+        }, 300);
+        
+        showNotification('Item dihapus dari keranjang', 'success');
+
     } catch (error) {
         console.error('Failed to delete:', error);
+        showNotification(error.message || 'Gagal menghapus item', 'error');
+        
+        // Re-enable delete button jika error
+        if (deleteBtn) deleteBtn.disabled = false;
     }
 }
 
 function updatePriceSummary(data) {
-    document.querySelector('.total-text').textContent = `Total Pesanan : Rp ${formatRupiah(data.subtotal)}`;
-    const rows = document.querySelectorAll('.price-breakdown .price-row span:nth-child(2)');
-    rows[0].textContent = `Rp ${formatRupiah(data.subtotal)}`;
-    rows[1].textContent = `Rp ${formatRupiah(data.shipping)}`;
-    rows[2].textContent = `Rp ${formatRupiah(data.adminFee)}`;
-    document.querySelector('.total-row span:nth-child(2)').textContent = `Rp ${formatRupiah(data.total)}`;
+    const totalText = document.querySelector('.total-text');
+    if (totalText) {
+        totalText.textContent = `Total Pesanan : Rp ${formatRupiah(data.subtotal)}`;
+    }
+    
+    const priceRows = document.querySelectorAll('.price-breakdown .price-row span:nth-child(2)');
+    if (priceRows.length >= 3) {
+        priceRows[0].textContent = `Rp ${formatRupiah(data.subtotal)}`;
+        priceRows[1].textContent = `Rp ${formatRupiah(data.shipping)}`;
+        priceRows[2].textContent = `Rp ${formatRupiah(data.adminFee)}`;
+    }
+    
+    const totalRow = document.querySelector('.total-row span:nth-child(2)');
+    if (totalRow) {
+        totalRow.textContent = `Rp ${formatRupiah(data.total)}`;
+    }
 }
 
 function formatRupiah(number) {
     return number.toLocaleString('id-ID');
 }
 
+function showEmptyCartMessage() {
+    const orderSection = document.querySelector('.order-section');
+    if (orderSection) {
+        orderSection.innerHTML = `
+            <div class="empty-cart-message" style="text-align: center; padding: 2rem;">
+                <h3>Keranjang Kosong</h3>
+                <p>Silakan tambahkan item ke keranjang terlebih dahulu</p>
+                <a href="/dashboard" class="btn-primary" style="display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: #ff6b6b; color: white; text-decoration: none; border-radius: 5px;">
+                    Kembali Belanja
+                </a>
+            </div>
+        `;
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 5px;
+        color: white;
+        z-index: 10000;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        ${type === 'success' ? 'background: #28a745;' : ''}
+        ${type === 'error' ? 'background: #dc3545;' : ''}
+        ${type === 'info' ? 'background: #17a2b8;' : ''}
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
 function bindConfirmButton() {
     const confirmBtn = document.querySelector('.confirm-btn');
     if (!confirmBtn) return;
 
-    if (selectedPaymentMethod === null) {
-        confirmBtn.classList.add('disabled');
-    }
-
-    confirmBtn.addEventListener('click', async () => {
+    confirmBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        if (confirmBtn.disabled) return;
+        
         const notes = document.querySelector('.notes-input')?.value.trim() || '';
-        console.log("Selected payment method:", selectedPaymentMethod);
-        console.log("notes:", notes);
+        
+        // Validate before submitting
+        if (!selectedPaymentMethod) {
+            showNotification('Pilih metode pembayaran terlebih dahulu', 'error');
+            return;
+        }
+        
+        if (!addressIsPresent) {
+            showNotification('Alamat pengiriman belum diatur', 'error');
+            return;
+        }
+        
+        // Disable button to prevent double submission
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Memproses...';
 
         try {
             const response = await fetch('/order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     payment_method: selectedPaymentMethod,
@@ -145,15 +290,29 @@ function bindConfirmButton() {
                 })
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Gagal membuat pesanan');
+            }
+
             const result = await response.json();
-            console.log(result)
-            window.location.replace(`/order/${result.order_id}`);
-        } catch (err) {
-            console.error('Error:', err);
+            showNotification('Pesanan berhasil dibuat!', 'success');
+            
+            // Redirect ke halaman order detail
+            setTimeout(() => {
+                window.location.replace(`/order/${result.order_id}`);
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification(error.message || 'Terjadi kesalahan saat membuat pesanan', 'error');
+            
+            // Re-enable button
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Konfirmasi Pembayaran';
         }
     });
 }
-
 
 function bindModalEvents() {
     const modal = document.getElementById('paymentModal');
@@ -195,7 +354,6 @@ function togglePaymentMethod(element) {
     }
 }
 
-
 function updateConfirmButtonState() {
     const confirmBtn = document.querySelector('.confirm-btn');
     const warnMsg = document.getElementById('warn-msg');
@@ -203,35 +361,38 @@ function updateConfirmButtonState() {
 
     if (!confirmBtn) return;
 
+    let isDisabled = false;
+    let warningMessage = '';
+
     if (cartItems.length === 0) {
-        confirmBtn.disabled = true;
-        confirmBtn.classList.add('disabled');
-        if (warnMsg) warnMsg.textContent = 'Keranjang kosong';
+        isDisabled = true;
+        warningMessage = 'Keranjang kosong';
     } else if (!selectedPaymentMethod) {
-        confirmBtn.disabled = true;
-        confirmBtn.classList.add('disabled');
-        if (warnMsg) warnMsg.textContent = 'Pilih metode pembayaran';
+        isDisabled = true;
+        warningMessage = 'Pilih metode pembayaran';
     } else if (!addressIsPresent) {
-        confirmBtn.disabled = true;
-        confirmBtn.classList.add('disabled');
-        if (warnMsg) warnMsg.textContent = 'Alamat Belum Diatur';
-    } else {
-        confirmBtn.disabled = false;
-        confirmBtn.classList.remove('disabled');
-        if (warnMsg) warnMsg.textContent = '';
+        isDisabled = true;
+        warningMessage = 'Alamat belum diatur';
+    }
+
+    confirmBtn.disabled = isDisabled;
+    confirmBtn.classList.toggle('disabled', isDisabled);
+    
+    if (warnMsg) {
+        warnMsg.textContent = warningMessage;
+        warnMsg.style.color = warningMessage ? '#dc3545' : '';
     }
 }
-
-
 
 function confirmPaymentMethod() {
     if (selectedPaymentMethod) {
         const openBtn = document.getElementById('openPaymentBtn');
         if (openBtn) {
-            openBtn.textContent = `${selectedPaymentMethod}`;
+            openBtn.textContent = selectedPaymentMethod;
         }
         updateConfirmButtonState();
         closePaymentModal();
+        showNotification(`Metode pembayaran ${selectedPaymentMethod} dipilih`, 'success');
     }
 }
 
